@@ -8,48 +8,71 @@ library(raster)
 library(lubridate)
 library(reshape)
 
-#' # 1) Füllen von Lücken mitels linearer Regression
-#' ## 1.1) Einlesen der Daten
-#' 
-## ------------------------------------------------------------------------
-# Einlesen der Niederschlagsdaten & Koordinaten
+
+# Einlesen der Niederschlagsdaten & Koordinaten nur die 1971 beginnen
+107177
+107193
+107300
+107466
 
 setwd("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten")
-file <- "N107300.dat"
+file1 <- "N-Tagessummen-107177.csv"
+file2 <- "N-Tagessummen-107193.csv"
+file3 <- "N-Tagessummen-107300.csv"
+file4 <- "N-Tagessummen-107466.csv"
 
-pst1 <- read_table(file, col_names = F, skip = 25, cols(
-        X1 = col_date(format = "%d.%m.%Y"),
-        X2 = col_time(format = ""),
-        X3 = col_double()
+pst1 <- read_csv2(file1, col_names = F, skip = 23, cols(
+        X1 = col_date(format = "%d.%m.%Y %T"), 
+        X2 = col_double()
 ))
-file2 <- "N107284.dat"
+# because of col_date it takes just the date not the time (specified with %T)
 
-pst2 <- read_table(file2, col_names = F, skip = 25, cols(
-        X1 = col_date(format = "%d.%m.%Y"),
-        X2 = col_time(format = ""),
-        X3 = col_double()
+pst2 <- read_csv2(file2, col_names = F, skip = 25, cols(
+        X1 = col_date(format = "%d.%m.%Y %T"), 
+        X2 = col_double()
+))
+pst3 <- read_csv2(file3, col_names = F, skip = 21, cols(
+        X1 = col_date(format = "%d.%m.%Y %T"), 
+        X2 = col_double()
+))
+pst4 <- read_csv2(file4, col_names = F, skip = 21, cols(
+        X1 = col_date(format = "%d.%m.%Y %T"), 
+        X2 = col_double()
 ))
 
 
-pst1 <- pst1[as_date(pst1$X1) < as_date("2017-01-03"), ]
-pst2 <- pst2[as_date(pst2$X1) < as_date("2017-01-03"), ]
+# last entry is "Lücke" so we cut it off
 
-### to one dataframe
+pst1 <- pst1[as_date(pst1$X1) < as_date("2015-01-01"), ]
+pst2 <- pst2[as_date(pst2$X1) < as_date("2015-01-01"), ]
+pst3 <- pst3[as_date(pst3$X1) < as_date("2015-01-01"), ]
+pst4 <- pst4[as_date(pst4$X1) < as_date("2015-01-01"), ]
 
-pst1 <- add_column(pst1,pst2$X3)
-pst1 <- rename(pst1, c(X3="N107300", 'pst2$X3'="N107284"))
+
+# put all P-data in one data-frame
+
+pst1 <- add_column(pst1,pst2$X2,pst3$X2,pst4$X2)
+pst1 <- rename(pst1, c(X1="date",X2="N107177", 'pst2$X2'="N107193",'pst3$X2'="N107300",
+                       'pst4$X2'="N107466"))
 ############ koord
 
 
-File2 <- "_Niederschlag_geo_red.csv"
-xy <- read_csv(File2, col_names = T, cols(
+File2 <- "_Niederschlagstation_coord.csv"
+xy <- read_csv2(File2, col_names = T, cols(
+        ID = col_character(),
         x = col_double(),
-        y = col_double()
+        y = col_double(),
+        elev = col_integer(),
+        start = col_integer()
 ))
 
+# get the stations we need
+xy <- filter(xy, ID %in% c("N107177","N107193","N107300","N107466")) # not that good
+#xy <- filter(xy, start == 1971) # we dont want all 1971s
+
 ######
-#summe um nachvollziehbar zu sein
-P_sum <- colSums(pst1[3:length(pst1)])
+#sum of p just to check
+P_sum <- colSums(pst1[2:length(pst1)])
 
 ################
 
@@ -88,6 +111,7 @@ plot_coo
 #' ## 2.2) Gebiet für räumliche Interpolation
 #' ### Erzeugen eines SpatialPointsDataFrame
 ## ------------------------------------------------------------------------
+P.int1 <- P.int # as backup 
 coordinates(P.int) = ~x + y
 class(P.int)
 
@@ -97,8 +121,8 @@ class(P.int)
 # einen raster machen 111111 
 
 #make grid
-x.range <- as.numeric(c(15.238, 15.444))  # min/max longitude of the interpolation area (aus gis)
-y.range <- as.numeric(c(47.847,48.244))  # min/max latitude of the interpolation area (aus gis)
+x.range <- as.numeric(c(15.15, 15.49))  # min/max longitude of the interpolation area (aus gis)
+y.range <- as.numeric(c(47.87, 48.05))  # min/max latitude of the interpolation area (aus gis)
 
 grd <- expand.grid(x = seq(from = x.range[1], to = x.range[2], by = 0.01), y = seq(from = y.range[1], 
                       to = y.range[2], by = 0.01))  # expand points to grid
@@ -168,24 +192,25 @@ text1 = list("sp.text", c(521000,450500), "0", which = 1)
 text2 = list("sp.text", c(526000,450500), "2500 m", which = 1)
 arrow = list("SpatialPolygonsRescale", layout.north.arrow(type=1), 
              offset = c(526000,451500), scale = 1200, which = 1)
-rv = list("sp.lines", riv, col = "blue", lwd=1.5,zcol=1)
-peg = list("sp.points", pegel, col="red", cex=1.5, pch=19, zcol=1)
-catch = list("sp.lines", ezg.poly, col="black", lwd=2.5, fill="transparent")
-P.station1 <- list('sp.points', P.int, col='black', pch=17, cex=1.8)
+#rv = list("sp.lines", riv, col = "blue", lwd=1.5,zcol=1)
+#peg = list("sp.points", pegel, col="red", cex=1.5, pch=19, zcol=1)
+catch = list("sp.lines", ezg, col="black", lwd=2.5, fill="transparent") # ezg statt ezg.poly
+P.stations <- list('sp.points', P.int, col='black', pch=17, cex=1.8)
 
 
 spplot(p.tp["var1.pred"], main = "Gebietsniederschlag",
        sp.layout = list( arrow, catch, P.stations, scale, text1, text2),
        col.regions=jet.colors)
 
+### funkt nicht:
 plot(ezg)
 plot(P.int, add = T)
-ggplot(ezg.poly, aes(x=long, y=lat, group=group)) + 
+ezgplot <- ggplot(ezg.poly, aes(x=long, y=lat, group=group)) + 
         geom_path() +
         coord_quickmap()
+ezgplot
 
-
-plot_coo <- ggplot(data = P.int,aes(x = x, y = y)) +
+plot_coo <- ggplot(data = P.int1, aes(x=x,y=y )) +
         geom_point(aes(color=ID))
         
 plot_coo
@@ -222,18 +247,19 @@ P.sum.jahr
 # File <- "031_Beispiel_2_Daten_Angabe_031.csv"
 # P.year1 <- read.table(File, header = TRUE, sep=";", skip = 0, dec=".", stringsAsFactors=FALSE)
 P.input.NA <- as.data.frame(pst1[1])
+
 P.input.NA$P<- vector("double",nrow(P.input.NA)) #Spalte P initialisieren
 
 #' 
 #' ### Schleife zur Ermittlung des Gebietsniederschlages für jeden Tag
-P.d <- pst1[3:4]
+P.d <- pst1[2:5]
 
-P.int.d <- as.data.frame(xy)
+P.int.d <- as.data.frame(xy)[1:4]
 P.int.d$P <- vector("double",nrow(xy))
 colnames(P.int.d) <- c("ID","x","y","z","P")
 coordinates(P.int.d) = ~x + y
 #-----------------------------  Dauert ewig, d gibts doch sicher eine andere möglichkeit? ußerdem wird nur 
-for (j in 1:16804) {
+for (j in 1:16071) {
         P.int.d$P <- unlist(P.d[j,]) #unlist: Umwandlung zu vector
         p.tp = krige(P ~ 1, locations=P.int.d, newdata=grd, 
                      nmax = 1)#  "Durchführen der Interpolation"
