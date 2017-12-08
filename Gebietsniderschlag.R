@@ -269,17 +269,17 @@ for (j in 1:16071) {
 }
 
 #### herrichten für speichern
-P.input.save <- separate(P.input.NA, X1, into = c("year", "month", "day"), sep="-")
+#P.input.save <- separate(P.input.NA, date, into = c("year", "month", "day"), sep="-") #stimmt nicht
 #' 
 #' ### Plotten der Zeitreihe der Gebietsniederschläge
 ## ---- echo=F, warning=F--------------------------------------------------
 P.input.save <- P.input.NA
-P.input.save$X1 <- format(P.input.NA1$X1, "%d%m%Y") # für input modna
+P.input.save$date <- format(P.input.NA$date, "%d%m%Y") # für input modna
 
 
-plot_geb <- ggplot(data = P.input.NA,aes(x = X1, y = P)) + 
-        xlab("Zeit [d]") + ylab("Gebietsniederschlag [mm/d]") +
-        scale_x_datetime(date_breaks = "1 month", date_labels = "%m") +
+plot_geb <- ggplot(data = P.input.NA,aes(x = date, y = P)) + 
+      #  xlab("Zeit [d]") + ylab("Gebietsniederschlag [mm/d]") +
+      #  scale_x_datetime(date_breaks = "1 month", date_labels = "%m") +
         geom_bar(stat="identity")
 plot_geb
 
@@ -297,8 +297,10 @@ plot_geb
 #' ### Speichern der Zeitreihe der Sommerniederschläge als csv
 ## ------------------------------------------------------------------------
 setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output")
-write.table(P.input.save,file = "output_P.txt",sep=" ", row.names=FALSE)
-
+# paste(format(Sys.time(), "%Y-%m-%d"),"_P-output", ".pdf", sep = "") to get searchable names
+write.table(P.input.save,file = paste(format(Sys.time(), "%Y-%m-%d"),
+        "_P-output", ".txt", sep = "") ,sep=" ", row.names=FALSE,
+        col.names = F, quote = F)
 #' todo
 #' fehler finden warum die eine station genommen wird und nicht die andere? evetuell andere interpol methode?
 #' mehr sttionen finden zum interpolieren
