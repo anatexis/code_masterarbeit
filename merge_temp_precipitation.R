@@ -9,7 +9,7 @@ library(reshape)
 # Einlesen der Temperaturschlagsdaten & Koordinaten
 
 
-setwd("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output")
+setwd("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output_R")
 file1 <- "2017-12-08_P-output.txt"
 file2 <- "2017-12-08_Temp-output.txt"
 
@@ -28,9 +28,19 @@ pst_T1 <- pst_T[as_date(pst_T$X1) < as_date("2015-01-01"), ]
 # merge T and P
 P_T <- add_column(pst_T1,pst_P1$X2)
 
-P_T$X1 <- format(P_T$X1, "%d%m%Y") # for input modna
+# rounding to one digit
+P_T$X2 <- round(P_T$X2,1)
+P_T$`pst_P1$X2` <- round(P_T$`pst_P1$X2`,1)
 
-# #add pot ET (calculated) DOESNT WORK RIGHT NOW
+#removing all 29.02 from dataframw
+P_T2902rm <- P_T[as.numeric(strftime(P_T$X1, "%m%d")) != 229,]
+
+# change date format for input modna
+P_T$X1 <- format(P_T$X1, "%d%m%Y") 
+P_T2902rm$X1 <- format(P_T2902rm$X1, "%d%m%Y") 
+
+# #add pot ET (calculated) DOESNT WORK RIGHT NOW - own script because pot_ET calc
+# ulation is dependend on _tnse.txt
 # setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/")
 # file3 <- "petout.txt"
 # PET <- read_table(file3, col_names = F, cols(X1 = col_date(format = "%d%m%Y"),
@@ -40,13 +50,17 @@ P_T$X1 <- format(P_T$X1, "%d%m%Y") # for input modna
 # P_T <- add_column(PET$X2) #doesnt work because PET has missing values (sometimes no 01.01., year starts with 02.01??)
 
 
-# rounding to one digit
 
-P_T$X2 <- round(P_T$X2,1)
-P_T$`pst_P1$X2` <- round(P_T$`pst_P1$X2`,1)
 
-setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output/")
+setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output_R/")
 # commented to not overwrite stuff
- # write.table(P_T,file = paste(format(Sys.time(), "%Y-%m-%d"),
- #                                       "_tnse", ".txt", sep = "") ,sep=",", row.names=FALSE,
- #             col.names = c("Datum", "t", "NSeff"), quote = F)
+# # complete data
+# write.table(P_T,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                                       "_tnse", ".txt", sep = "") ,sep=",", row.names=FALSE,
+#             col.names = c("Datum", "t", "NSeff"), quote = F)
+# 
+# # removed 29.02
+# write.table(P_T2902rm,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                              "_tnse2902rm", ".txt", sep = "") ,sep=",", row.names=FALSE,
+#             col.names = c("Datum", "t", "NSeff"), quote = F)
+
