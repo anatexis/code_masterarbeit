@@ -1,5 +1,7 @@
 
-
+######
+# for precipitation + temp + Evapotranspiration see "merge_plus_epot.R"
+#####
 library(tidyverse)
 library(lubridate)
 library(reshape)
@@ -38,17 +40,6 @@ P_T2902rm <- P_T[as.numeric(strftime(P_T$X1, "%m%d")) != 229,]
 # change date format for input modna
 P_T$X1 <- format(P_T$X1, "%d%m%Y") 
 P_T2902rm$X1 <- format(P_T2902rm$X1, "%d%m%Y") 
-
-# #add pot ET (calculated) DOESNT WORK RIGHT NOW - own script because pot_ET calc
-# ulation is dependend on _tnse.txt
-# setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/")
-# file3 <- "petout.txt"
-# PET <- read_table(file3, col_names = F, cols(X1 = col_date(format = "%d%m%Y"),
-#                                                  X2 = col_double()
-# ))
-# 
-# P_T <- add_column(PET$X2) #doesnt work because PET has missing values (sometimes no 01.01., year starts with 02.01??)
-
 
 
 
