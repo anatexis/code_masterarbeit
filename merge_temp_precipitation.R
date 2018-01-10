@@ -47,11 +47,13 @@ setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output_R/")
 # commented to not overwrite stuff
 # # complete data
 # write.table(P_T,file = paste(format(Sys.time(), "%Y-%m-%d"),
-#                                       "_tnse", ".txt", sep = "") ,sep=",", row.names=FALSE,
-#             col.names = c("Datum", "t", "NSeff"), quote = F)
+#                              "_tnse", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE, col.names = c("Datum", "t", "NSeff"), 
+#             eol = "\r\n", quote = F)
 # 
 # # removed 29.02
 # write.table(P_T2902rm,file = paste(format(Sys.time(), "%Y-%m-%d"),
-#                              "_tnse2902rm", ".txt", sep = "") ,sep=",", row.names=FALSE,
-#             col.names = c("Datum", "t", "NSeff"), quote = F)
+#                                    "_tnse2902rm", ".txt", sep = ""), sep=",",
+#             row.names=FALSE, col.names = c("Datum", "t", "NSeff"), 
+#             eol = "\r\n", quote = F)
 

@@ -65,13 +65,14 @@ setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output_R/")
 
 # commented out when written
 # complete data
-write.table(P_T_ET,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                                      "P_T_ET", ".txt", sep = "") ,sep=",", row.names=FALSE,
-            col.names = c("Datum", "t", "NSeff", "ET"), quote = F)
+# write.table(P_T_ET,file = paste(format(Sys.time(), "%Y-%m-%d"),"P_T_ET", ".txt",
+#                                 sep = "") ,sep=",",row.names=FALSE,
+#             col.names = c("Datum", "t", "NSeff", "ET"), eol = "\r\n", quote = F)
+# 
 
-
-# # TO DO
-# # removed 29.02
+#----------TO DO----------------
+# 
+# # write removed 29.02
 # write.table(P_T2902rm,file = paste(format(Sys.time(), "%Y-%m-%d"),
 #                              "_tnse2902rm", ".txt", sep = "") ,sep=",", row.names=FALSE,
 #             col.names = c("Datum", "t", "NSeff"), quote = F)
