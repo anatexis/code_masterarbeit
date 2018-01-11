@@ -61,7 +61,7 @@ P_T_ET <- add_column(P_T,PET$X2)
 
 
 
-setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output_R/")
+setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_R/")
 
 # commented out when written
 # complete data
