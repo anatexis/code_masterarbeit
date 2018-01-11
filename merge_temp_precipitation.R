@@ -43,7 +43,7 @@ P_T2902rm$X1 <- format(P_T2902rm$X1, "%d%m%Y")
 
 
 
-setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output_R/")
+setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_R/")
 # commented to not overwrite stuff
 # # complete data
 # write.table(P_T,file = paste(format(Sys.time(), "%Y-%m-%d"),

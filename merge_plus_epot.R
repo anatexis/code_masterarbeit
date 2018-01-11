@@ -15,7 +15,7 @@ library(reshape)
 # Einlesen der Temperaturschlagsdaten & Koordinaten
 
 
-setwd("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output_R")
+setwd("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_R")
 file1 <- "2017-12-08_P-output.txt"
 file2 <- "2017-12-08_Temp-output.txt"
 
