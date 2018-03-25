@@ -24,11 +24,11 @@ pst_T <- read_table(file2, col_names = F, cols( X1 = col_date(format = "%d%m%Y")
                                                 ))
 # cut timeseries to overlapping period from 01.01.1991 to 16.01.2014 
 
-pst_P1 <- pst_P[as_date(pst_P$X1) > as_date("1990-12-31"), ]
-pst_P1 <- pst_P1[as_date(pst_P1$X1) < as_date("2014-01-17"), ]
+pst_P1 <- pst_P[as_date(pst_P$X1) > as_date("2012-12-31"), ]
+pst_P1 <- pst_P1[as_date(pst_P1$X1) < as_date("2014-01-01"), ]
 
-pst_T <- pst_T[as_date(pst_T$X1) > as_date("1990-12-31"), ]
-pst_T1 <- pst_T[as_date(pst_T$X1) < as_date("2014-01-17"), ]
+pst_T <- pst_T[as_date(pst_T$X1) > as_date("2012-12-31"), ]
+pst_T1 <- pst_T[as_date(pst_T$X1) < as_date("2014-01-01"), ]
 
 # merge T and P
 P_T <- add_column(pst_T1,pst_P1$X2)
@@ -39,16 +39,19 @@ P_T$`pst_P1$X2` <- round(P_T$`pst_P1$X2`,1)
 
 # add pot ET (calculated from fortran epot_main.for)
 setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/")
-file3 <- "petout_fill.txt"
+file3 <- "petout_richtig3.txt"
 PET <- read_table(file3, col_names = F, cols(X1 = col_date(format = "%d%m%Y"),
                                                  X2 = col_double()
 ))
+
+PET <- PET[as_date(PET$X1) > as_date("2012-12-31"), ]
+PET <- PET[as_date(PET$X1) < as_date("2014-01-01"), ]
 
 # P_T_ET variable with precipitation, temp and Evapotranspiration
 P_T_ET <- add_column(P_T,PET$X2)
 
 # start timeseries at 20.11.2012 because thats earliest q observation
-P_T_ET <- P_T_ET[as_date(P_T_ET$X1) > as_date("2012-11-19"), ]
+P_T_ET <- P_T_ET[as_date(P_T_ET$X1) > as_date("2012-12-31"), ]
 
 # change date format for input modna
 P_T_ET$X1 <- format(P_T_ET$X1, "%d%m%Y") 
@@ -65,6 +68,6 @@ setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_R/")
 # commented out when written
 # complete data
 write.table(P_T_ET,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                                "P_T_ET-2012-2014", ".txt", sep = "") ,sep=",",
+                                "P_T_ET-2013", ".txt", sep = "") ,sep=",",
             row.names=FALSE,col.names = c("Datum", "t", "NSeff", "ET"),
             eol = "\r\n", quote = F)
