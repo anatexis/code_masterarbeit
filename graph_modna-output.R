@@ -2,7 +2,7 @@ library(tidyverse)
 library(lubridate)
 library(stringi)
 detach("package:hydroGOF", unload=TRUE)
-setwd("C:/Users/Katrin/Desktop/master/daten/output")
+setwd("C:/Users/Russ/Desktop/master/daten/output")
 file <- "tt1summary.txt"
 
 ### to get r to read in files with in the form of
@@ -37,7 +37,7 @@ Q <- ggplot(data= discharge)+
   annotate("text", x=as.Date(16064), y=34,label=as.character(round(kge,2)))
   
 Q
-setwd("C:/Users/Katrin/Desktop/master/plotfiles_neu")
+setwd("C:/Users/Russ/Desktop/master/plotfiles_neu")
 file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q",".png",sep="")
 ggsave(file)
 
@@ -53,7 +53,7 @@ Q_end <- ggplot(data= discharge)+
 
 Q_end
 
-setwd("C:/Users/Katrin/Desktop/master/plotfiles_nur_Q_END")
+setwd("C:/Users/Russ/Desktop/master/plotfiles_nur_Q_END")
 file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_END",".png",sep="")
 ggsave(file)
 
@@ -70,7 +70,7 @@ write.table(changes,file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
             eol = "\r\n", quote = F)
 
 # auch in plotfiles_neu schreiben
-setwd("C:/Users/Katrin/Desktop/master/plotfiles_neu")
+setwd("C:/Users/Russ/Desktop/master/plotfiles_neu")
 changes <- tibble(casc,kcasc,klin,split,rootstor)
 write.table(changes,file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
                                  "_Q", ".txt", sep = "") ,sep=",",
