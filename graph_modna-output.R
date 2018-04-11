@@ -39,7 +39,7 @@ Q <- ggplot(data= discharge)+
 Q
 setwd("C:/Users/Russ/Desktop/master/plotfiles_neu")
 file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q",".png",sep="")
-ggsave(file)
+ggsave(file, height = 3.368173, width = 4.27, units = "in")
 
 Q_end <- ggplot(data= discharge)+
   geom_line( aes(x=TTMMYYYY, y=qsim, color = ".Qsim"))+
@@ -55,28 +55,29 @@ Q_end
 
 setwd("C:/Users/Russ/Desktop/master/plotfiles_nur_Q_END")
 file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_END",".png",sep="")
-ggsave(file)
+ggsave(file, height = 3.368173, width = 4.27, units = "in")
 
 ### damit ich nachvollziehen kann was ich gemacht hab
+EP_corr <- "1.1"
 casc <- "1"
 kcasc <- "2"
 klin <- "50"
+splitmeth <- "1"
 split <- "0.45"
-rootstor <- "70"
-changes <- tibble(casc,kcasc,klin,split,rootstor)
+rootstor <- "90"
+changes <- tibble(EP_corr,casc,kcasc,klin,splitmeth,split,rootstor)
 write.table(changes,file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
                                 "_Q", ".txt", sep = "") ,sep=",",
-            row.names=FALSE,col.names = c("casc", "kcask", "klin", "split", "rootstor"),
+            row.names=FALSE,col.names = c("EP_corr","casc", "kcask", "klin", "splitmeth", "split", "rootstor"),
             eol = "\r\n", quote = F)
 
 # auch in plotfiles_neu schreiben
 setwd("C:/Users/Russ/Desktop/master/plotfiles_neu")
-changes <- tibble(casc,kcasc,klin,split,rootstor)
+changes <- tibble(EP_corr,casc,kcasc,klin,splitmeth,split,rootstor)
 write.table(changes,file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
                                  "_Q", ".txt", sep = "") ,sep=",",
-            row.names=FALSE,col.names = c("casc", "kcask", "klin", "split", "rootstor"),
+            row.names=FALSE,col.names = c("EP_corr","casc", "kcask", "klin", "splitmeth", "split", "rootstor"),
             eol = "\r\n", quote = F)
-
 #that I can compare nse kge better
 nse
 kge
