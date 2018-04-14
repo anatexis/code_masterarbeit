@@ -3,10 +3,10 @@ library(lubridate)
 library(stringi)
 detach("package:hydroGOF", unload=TRUE)
 setwd("C:/Users/Russ/Desktop/master/daten/output")
-file <- "tt1summary.txt"
+file <- "tt2summary.txt"
 
 ### to get r to read in files with in the form of
-### dmmyyy and ddmmyyy we have to do smt like this:
+### dmmyyy AND ddmmyyy we have to do smt like this:
 discharge <- read_table(file, col_names = T,
                         cols(TTMMYYYY = "c",
                              .default=col_double()))
@@ -57,27 +57,26 @@ setwd("C:/Users/Russ/Desktop/master/plotfiles_nur_Q_END")
 file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_END",".png",sep="")
 ggsave(file, height = 3.368173, width = 4.27, units = "in")
 
-### damit ich nachvollziehen kann was ich gemacht hab
-EP_corr <- "1.1"
-casc <- "1"
-kcasc <- "2"
-klin <- "50"
-splitmeth <- "1"
-split <- "0.45"
-rootstor <- "90"
-changes <- tibble(EP_corr,casc,kcasc,klin,splitmeth,split,rootstor)
-write.table(changes,file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
-                                "_Q", ".txt", sep = "") ,sep=",",
-            row.names=FALSE,col.names = c("EP_corr","casc", "kcask", "klin", "splitmeth", "split", "rootstor"),
-            eol = "\r\n", quote = F)
+### damit ich nachvollziehen kann was ich gemacht hab wird inputmodna verschoben
 
-# auch in plotfiles_neu schreiben
+#(quelle: https://stackoverflow.com/questions/2384517/using-r-to-copy-files#2384621)
+file <- list.files("C:/Users/Russ/Desktop/master/daten/input/",
+                    "inputmodna.txt", full.names = TRUE)
+file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_neu")
+file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_nur_Q_END/")
+
+#umbenennen
+#Quelle: https://stackoverflow.com/questions/10758965/how-do-i-rename-files-using-r
+# in plotfiles_nur_Q_END
+file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
+                                   "_inputmodna", ".txt", sep = ""))
+# in plotfiles_neu
 setwd("C:/Users/Russ/Desktop/master/plotfiles_neu")
-changes <- tibble(EP_corr,casc,kcasc,klin,splitmeth,split,rootstor)
-write.table(changes,file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
-                                 "_Q", ".txt", sep = "") ,sep=",",
-            row.names=FALSE,col.names = c("EP_corr","casc", "kcask", "klin", "splitmeth", "split", "rootstor"),
-            eol = "\r\n", quote = F)
+
+setwd("C:/Users/Russ/Desktop/master/plotfiles_neu")
+file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
+                                   "_inputmodna", ".txt", sep = ""))
+
 #that I can compare nse kge better
 nse
 kge
