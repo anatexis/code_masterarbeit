@@ -310,7 +310,7 @@ plot_geb
 #' 
 #' ### Speichern der Zeitreihe der Sommerniederschläge als csv
 ## ------------------------------------------------------------------------
-setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output")
+setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_R")
 # paste(format(Sys.time(), "%Y-%m-%d"),"_P-output", ".pdf", sep = "") to get searchable names
 write.table(P.input.save,file = paste(format(Sys.time(), "%Y-%m-%d"),
         "_Temp-output", ".txt", sep = "") ,sep=" ", row.names=FALSE,
