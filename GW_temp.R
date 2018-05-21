@@ -13,40 +13,65 @@ View(gw_stations)
 gw_stations
 
 
-### keine ahnung was da passiert!
-#  gw_means1 sollte doch das gleiche sein wie gw_means2??
-gw_q_means2 <- gw_stations %>% 
+### zusammenfassen der GW-stationen
+# gruppieren nach stationen und quartalen
+# mittlere WT pro quartal pro station
+gw_q_means <- gw_stations %>% 
   filter(stat!="PG31900832",stat !="PG31900872")%>% #2 stat gefiltert weil zuwenige stationen
   group_by(stat,quarter) %>% 
   summarise(count = n(),
             quarter_mean = mean(WT)) 
 
-View(gw_q_means2)
-
-gw_means1 <- gw_q_means2 %>% 
-  group_by(quarter) %>% 
+all_gw_q_means <- gw_stations %>% 
+  group_by(stat,quarter) %>% 
   summarise(count = n(),
-            quarter_mean = mean(quarter_mean))
+            quarter_mean = mean(WT)) 
 
-View(gw_means1)
 
+# # mittlere wt temp pro quartal (ist aber nicht falsch gewichtet, stationen mit wenigen daten
+# # werden im vergleich stärker gewichtet als stationen mit vielen daten)
+# gw_means1 <- gw_q_means %>% 
+#   group_by(quarter) %>% 
+#   summarise(count = n(),
+#             quarter_mean = mean(quarter_mean))
+
+
+# gruppiert nur nach quartalen
 gw_means2 <- gw_stations %>% 
   filter(stat!="PG31900832",stat !="PG31900872") %>% 
   group_by(quarter) %>% 
   summarise(count = n(),
             quarter_mean = mean(WT)) 
 
-View(gw_means2)
+# View(gw_q_means2)
+# View(gw_means1)
+ View(gw_means2)
+
+
+ggplot(gw_q_means, aes(x = quarter, y = quarter_mean)) +
+  geom_point(aes(colour = count), size = 2) +
+  scale_colour_gradientn(colours=rainbow(6)) +
+  facet_grid(quarter~stat)
+
+ggplot(all_gw_q_means, aes(x = quarter, y = quarter_mean)) +
+  geom_point(aes(colour = count), size = 2) +
+  scale_colour_gradientn(colours=rainbow(6)) +
+  facet_grid(quarter~stat)
+
+# maybe remove station
+
+
+ggplot(gw_means2, aes(x = quarter, y = quarter_mean), colours=count) +
+  geom_point(aes(colour = count), size= 3) +
+  scale_colour_gradientn(colours=rainbow(6))
 
 
 
 
 
 
-ggplot(gw_q_means, aes(x = quarter, y = stat, height = quarter_mean, group=stat)) + 
-  geom_ridgeline(scale=.08)
 
-ggplot(gw_q_means, aes(x = quarter, y = stat, fill = quarter_mean, group=stat)) +
-  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
-  scale_fill_viridis(name = "Temp. [F]", option = "C") +
-  labs(title = 'Temperatures in Lincoln NE in 2016')
+
+## sources
+
+# facet_grid: http://www.cookbook-r.com/Graphs/Facets_(ggplot2)/
