@@ -58,46 +58,14 @@ weekly_temp <- airtemp %>%
   summarise(
     Temp = mean(Temp))
 
+setwd ("C:/Users/Russ/Desktop/master/Daten/output_R/")
 
-
-# 
-# library(hydroGOF)
-# nse <- NSE(weekly_dis$qsim,weekly_dis$Qobs)
-# kge <- KGE(weekly_dis$qsim,weekly_dis$Qobs)
-# 
-# 
-# Q <- ggplot(data= weekly_dis)+
-#   geom_line( aes(x=week, y=Qobs, color = "Qobs"))+
-#   geom_line( aes(x=week, y=qsim, color = "Qsim"))+
-# #  geom_line( aes(x=week, y=linout, color = "lin"))+
-# #  geom_line( aes(x=week, y=cascout, color = "casc"))+
-#   xlab("Date")+
-#   ylab("mean weekly discharge [mm]")+
-#   annotate("text", x=40, y=10,label="nse= ")+
-#   annotate("text", x=45.5, y=10,label=as.character(round(nse,2)))+
-#   annotate("text", x=40, y=9,label="kge= ")+
-#   annotate("text", x=45.5, y=9,label=as.character(round(kge,2)))+
-#   scale_color_manual(values=c("Qobs"="#00BFC4", "Qsim"="#C77CFF",
-#                               "lin"="#7CAE00", "casc"="#F8766D"))
-# 
-# Q
-# 
-# setwd("C:/Users/Russ/Desktop/master/plotfiles_weekly")
-# file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_weekly",".png",sep="")
-# ggsave(file, height = 3.368173, width = 4.27, units = "in")
-# 
-# ##to trace my changes copy inputfile.txt to directories of plots
-# 
-# file <- list.files("C:/Users/Russ/Desktop/master/daten/input/",
-#                    "inputmodna.txt", full.names = TRUE)
-# file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_weekly")
-# 
-# ##rename files
-# 
-# # in plotfiles_weekly
-# file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
-#                                    "_inputmodna", ".txt", sep = ""))
-
+# # commented out when written
+# # complete data
+# write.table(weekly_temp,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                                 "_weekly_air-temperature", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE,col.names = c("week", "air-temperature"),
+#             eol = "\r\n", quote = F)
 
 #sources:
 
