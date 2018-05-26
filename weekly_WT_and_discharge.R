@@ -43,9 +43,11 @@ weekly_dis <- discharge %>%
       cascout = mean(cascout))
 
 #calculate percentage of linout and cascout
-perc_weekly_dis <- weekly_dis %>% mutate(perc_GW = round(linout / qsim,2),
-                                         perc_Fast = round(cascout / qsim,2)) %>% 
-  select(., perc_GW, perc_Fast, qsim)
+perc_weekly_dis <- weekly_dis %>% mutate(perc_GW = round(linout / qsim,3),
+                                         perc_Fast = round(cascout / qsim,3)) %>% 
+  mutate(.,weeks=seq(1:53)) %>%
+  select(.,week, qsim, perc_GW, perc_Fast) 
+
 
 ### the same procedure with the temp
 # select output which is interesting for us
@@ -57,15 +59,22 @@ weekly_temp <- airtemp %>%
   group_by(week = week(TTMMYYY))%>%
   summarise(
     Temp = mean(Temp))
+  
 
 setwd ("C:/Users/Russ/Desktop/master/Daten/output_R/")
 
 # # commented out when written
-# # complete data
+
 # write.table(weekly_temp,file = paste(format(Sys.time(), "%Y-%m-%d"),
 #                                 "_weekly_air-temperature", ".txt", sep = "") ,sep=",",
 #             row.names=FALSE,col.names = c("week", "air-temperature"),
 #             eol = "\r\n", quote = F)
+
+
+write.table(perc_weekly_dis,file = paste(format(Sys.time(), "%Y-%m-%d"),
+                                "_percentage_of_fast_and_GW_weekly_discharge", ".txt", sep = "") ,sep=",",
+            row.names=FALSE,col.names = c("week","qsim","percentage_GW", "percentage_Fast"),
+            eol = "\r\n", quote = F)
 
 #sources:
 
