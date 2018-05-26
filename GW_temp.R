@@ -28,7 +28,7 @@ all_gw_q_means <- gw_stations %>%
             quarter_mean = mean(WT)) 
 
 
-# # mittlere wt temp pro quartal (ist aber nicht falsch gewichtet, stationen mit wenigen daten
+# # mittlere wt temp pro quartal (ist aber falsch gewichtet, stationen mit wenigen daten
 # # werden im vergleich stärker gewichtet als stationen mit vielen daten)
 # gw_means1 <- gw_q_means %>% 
 #   group_by(quarter) %>% 
@@ -41,7 +41,8 @@ gw_means2 <- gw_stations %>%
   filter(stat!="PG31900832",stat !="PG31900872") %>% 
   group_by(quarter) %>% 
   summarise(count = n(),
-            quarter_mean = mean(WT)) 
+            quarter_mean = mean(WT),
+            quarter_variance = var(WT)) 
 
 # View(gw_q_means2)
 # View(gw_means1)
@@ -63,12 +64,26 @@ ggplot(all_gw_q_means, aes(x = quarter, y = quarter_mean)) +
 
 ggplot(gw_means2, aes(x = quarter, y = quarter_mean), colours=count) +
   geom_point(aes(colour = count), size= 3) +
+  geom_boxplot(aes(quarter)) +
   scale_colour_gradientn(colours=rainbow(6))
 
+# weiß nicht wirklich wie ich die GW-Temperatur ansetzen soll - ich hab das mittel im quartal
+# und dazu die varianz, aber ich brauche wöchentliche werte. ich kann nicht einfach eine normalverteilung
+# im quartal annehmen!!? (1 quartal sind 13 wochen bzw. 14 fürs letzte, weil da ja einm messwert zuviel
+# rauskommt vom modmod, da kommt irgendwas raus):plot(rnorm(13,gw_means2$quarter_mean[1],gw_means2$quarter_variance[1]))
+# ich probiere einfach mal die quartalswerte für die wochenwerte einzusetzen
+multi <- c(13,13,13,14)
 
+gw_temp <- tibble(weeks=seq(1:53),water_temperature=rep(gw_means2$quarter_mean,multi))
 
+setwd ("C:/Users/Russ/Desktop/master/Daten/output_R/")
 
-
+# # comment out when written
+# # complete data
+# write.table(gw_temp,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                                 "_weekly_water-temperature", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE,col.names = c("week", "water-temperature"),
+#             eol = "\r\n", quote = F)
 
 
 
