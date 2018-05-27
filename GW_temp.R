@@ -81,8 +81,8 @@ setwd ("C:/Users/Russ/Desktop/master/Daten/output_R/")
 # # comment out when written
 # # complete data
 # write.table(gw_temp,file = paste(format(Sys.time(), "%Y-%m-%d"),
-#                                 "_weekly_water-temperature", ".txt", sep = "") ,sep=",",
-#             row.names=FALSE,col.names = c("week", "water-temperature"),
+#                                 "_weekly_groundwater-temperature", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE,col.names = c("week", "groundwater_temperature"),
 #             eol = "\r\n", quote = F)
 
 
