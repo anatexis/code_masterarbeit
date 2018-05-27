@@ -63,6 +63,6 @@ setwd ("C:/Users/Russ/Desktop/master/Daten/output_R/")
 # commented out when written
 
 write.table(weekly_stream_temp,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                                "_weekly_sreamwater_temperature", ".txt", sep = "") ,sep=",",
+                                "_measured_weekly_streamwater_temperature", ".txt", sep = "") ,sep=",",
             row.names=FALSE,col.names = c("week", "streamwater_temperature"),
             eol = "\r\n", quote = F)
