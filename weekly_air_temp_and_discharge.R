@@ -70,11 +70,11 @@ setwd ("C:/Users/Russ/Desktop/master/Daten/output_R/")
 #             row.names=FALSE,col.names = c("week", "air-temperature"),
 #             eol = "\r\n", quote = F)
 
-
-write.table(perc_weekly_dis,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                                "_percentage_of_fast_and_GW_weekly_discharge", ".txt", sep = "") ,sep=",",
-            row.names=FALSE,col.names = c("week","qsim","percentage_GW", "percentage_Fast"),
-            eol = "\r\n", quote = F)
+# 
+# write.table(perc_weekly_dis,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                                 "_percentage_of_fast_and_GW_weekly_discharge", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE,col.names = c("week","qsim","percentage_GW", "percentage_Fast"),
+#             eol = "\r\n", quote = F)
 
 #sources:
 
