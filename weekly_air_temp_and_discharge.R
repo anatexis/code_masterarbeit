@@ -46,7 +46,7 @@ weekly_dis <- discharge %>%
 perc_weekly_dis <- weekly_dis %>% mutate(perc_GW = round(linout / qsim,3),
                                          perc_Fast = round(cascout / qsim,3)) %>% 
   mutate(.,weeks=seq(1:53)) %>%
-  select(.,week, qsim, perc_GW, perc_Fast) 
+  select(.,week, perc_Fast, perc_GW, qsim) 
 
 
 ### the same procedure with the temp
@@ -55,7 +55,7 @@ airtemp <- airtemp %>% select(., TTMMYYY,Temp)
 
 ### calculate weekly temperature
 # dplyr and pipe ftw!
-weekly_temp <- airtemp %>%
+weekly_atemp <- airtemp %>%
   group_by(week = week(TTMMYYY))%>%
   summarise(
     Temp = mean(Temp))
@@ -65,7 +65,7 @@ setwd ("C:/Users/Russ/Desktop/master/Daten/output_R/")
 
 # # commented out when written
 
-# write.table(weekly_temp,file = paste(format(Sys.time(), "%Y-%m-%d"),
+# write.table(weekly_atemp,file = paste(format(Sys.time(), "%Y-%m-%d"),
 #                                 "_weekly_air-temperature", ".txt", sep = "") ,sep=",",
 #             row.names=FALSE,col.names = c("week", "air-temperature"),
 #             eol = "\r\n", quote = F)
@@ -73,7 +73,7 @@ setwd ("C:/Users/Russ/Desktop/master/Daten/output_R/")
 # 
 # write.table(perc_weekly_dis,file = paste(format(Sys.time(), "%Y-%m-%d"),
 #                                 "_percentage_of_fast_and_GW_weekly_discharge", ".txt", sep = "") ,sep=",",
-#             row.names=FALSE,col.names = c("week","qsim","percentage_GW", "percentage_Fast"),
+#             row.names=FALSE,col.names = c("week", "percentage_Fast", "percentage_GW", "qsim"),
 #             eol = "\r\n", quote = F)
 
 #sources:
