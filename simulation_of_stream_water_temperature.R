@@ -19,14 +19,17 @@ discharge <- read_csv(file2, col_names = T)
 sim_air_stream_water <- air_gwater_temp[2]*discharge[2]
 sim_gwater_stream_water <- air_gwater_temp[3]*discharge[3]
 
-sim_stream_temp <- sim_air_stream_water+sim_gwater_stream_water ### RENAME VARIABLE NAME!!
+sim_temp <- as_tibble(sim_air_stream_water+sim_gwater_stream_water) %>% 
+  select(.,stemp=air_temperature)
+
 
 plot(sim_air_stream_water$air_temperature)
 plot(sim_gwater_stream_water$groundwater_temperature)
 plot(sim_stream_temp$air_temperature)
 
-ggplot(sim_stream_temp, aes(x=seq_along(sim_stream_temp$air_temperature),
-                            y=sim_stream_temp$air_temperature)) +
+ggplot(sim_temp, aes(x=seq_along(sim_temp$stemp),
+                            y=sim_temp$stemp)) +
+  ylim(0,16) +
   geom_point() +
   xlab("week") +
   ylab("simulated stream water temperature [C°]")+
@@ -39,33 +42,30 @@ ggplot(sim_stream_temp, aes(x=seq_along(sim_stream_temp$air_temperature),
 setwd("C:/Users/Russ/Desktop/master/daten/output_R")
 file3 <- "2018-05-27_measured_weekly_streamwater_temperature.txt"
 
-measured_stream_water_temperature <- read_csv(file3, col_names = T)
+obs_temp <- read_csv(file3, col_names = T) %>% 
+  select(., otemp = streamwater_temperature)
+
+ggplot(obs_temp, aes(x=seq_along(obs_temp$otemp),
+                     y=obs_temp$otemp)) +
+  ylim(0,16) +
+  geom_point() +
+  xlab("week") +
+  ylab("simulated stream water temperature [C°]")+
+  geom_smooth(method = "loess") #confidence intervall seems way too little?! .95 and moste of the points are outside??
+
+
+
+
 
 require(hydroGOF) ## VARIABLE OBEN ANPASSEN (sim_stream_temp$air_temperature sollte $sim_stream water_temp sein)
-nse <- NSE(sim_stream_temp$air_temperature,measured_stream_water_temperature$streamwater_temperature)
-kge <- KGE(sim_stream_temp$air_temperature,measured_stream_water_temperature$streamwater_temperature)
+nse <- NSE(sim_temp$stemp,obs_temp$otemp)
+kge <- KGE(sim_temp$stemp,obs_temp$otemp)
 
-###PLOT ANPASSEN!!
 
-# Q <- ggplot(data= discharge)+
-#   geom_line( aes(x=TTMMYYYY, y=Qobs, color = "Qobs"))+
-#   geom_line( aes(x=TTMMYYYY, y=qsim, color = "Qsim"))+
-#   geom_line( aes(x=TTMMYYYY, y=linout, color = "lin"))+
-#   geom_line( aes(x=TTMMYYYY, y=cascout, color = "casc"))+
-#   xlab("Date")+
-#   ylab("Discharge [mm]")+
-#   annotate("text", x=as.Date(16022), y=37,label="nse= ")+
-#   annotate("text", x=as.Date(16064), y=37,label=as.character(round(nse,2)))+
-#   annotate("text", x=as.Date(16022), y=34,label="kge= ")+
-#   annotate("text", x=as.Date(16064), y=34,label=as.character(round(kge,2)))+
-#   scale_color_manual(values=c("Qobs"="#00BFC4", "Qsim"="#C77CFF",
-#                               "lin"="#7CAE00", "casc"="#F8766D"))
-# 
-# Q
-#
-##
-#
-#simulation machen!!
+
+gof(sim_temp$stemp,obs_temp$otemp)
+ggof(sim_temp$stemp,obs_temp$otemp)
+
 
 
 
