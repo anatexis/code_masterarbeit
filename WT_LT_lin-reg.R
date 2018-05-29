@@ -2,14 +2,25 @@
 library(tidyverse)
 library(lubridate)
 library(reshape)
-setwd("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten")
+
+#read path on windows or linux
+
+path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten"
+if( .Platform$OS.type == "windows" )
+  path <- "C:/Users/Russ/Desktop/master/daten/Stationsdaten/"
+setwd(path)
+
+
 
 # Lufttemperatur
 LTfile1 <- "LT107300.dat"
 LTfile2 <- "LT115642.dat"
 
+#in linux:"Lücke" in win: "L�cke" (is this a problem?)
+#if yes, maybe this helps?: https://stackoverflow.com/a/28461726
 # Station Frankenfels
-LT1 <- read_table(LTfile1, col_names = F, skip = 20,na = "Lücke", cols(
+LT1 <- read_table(LTfile1, col_names = F, skip = 20,na = "Lücke", 
+                  cols(
         X1 = col_date(format = "%d.%m.%Y"), 
         X2 = col_time("%T"),
         X3 = col_double()
