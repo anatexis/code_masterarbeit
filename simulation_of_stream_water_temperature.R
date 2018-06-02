@@ -3,73 +3,78 @@ library(lubridate)
 
 detach("package:hydroGOF", unload=TRUE)
 
-### load air_water, discharge files
 
 setwd("C:/Users/Russ/Desktop/master/daten/output_R")
+
+# load air_water, discharge files
 file <- "2018-05-27_air_groundwater_weekly_temperature.txt"
 file2 <- "2018-05-27_percentage_of_fast_and_GW_weekly_discharge.txt"
 
-
 air_gwater_temp <- read_csv(file, col_names = T)
-
 discharge <- read_csv(file2, col_names = T)
 
-
-
-sim_air_stream_water <- air_gwater_temp[2]*discharge[2]
-sim_gwater_stream_water <- air_gwater_temp[3]*discharge[3]
-
-sim_temp <- as_tibble(sim_air_stream_water+sim_gwater_stream_water) %>% 
-  select(.,stemp=air_temperature)
-
-
-plot(sim_air_stream_water$air_temperature)
-plot(sim_gwater_stream_water$groundwater_temperature)
-plot(sim_stream_temp$air_temperature)
-
-ggplot(sim_temp, aes(x=seq_along(sim_temp$stemp),
-                            y=sim_temp$stemp)) +
-  ylim(0,16) +
-  geom_point() +
-  xlab("week") +
-  ylab("simulated stream water temperature [C°]")+
-  geom_smooth(method = "loess") #confidence intervall seems way too little?! .95 and moste of the points are outside??
-
-
-### comparison to measured stream water temperature
 # load weekly stream temperature data
-#
-setwd("C:/Users/Russ/Desktop/master/daten/output_R")
 file3 <- "2018-05-27_measured_weekly_streamwater_temperature.txt"
-
 obs_temp <- read_csv(file3, col_names = T) %>% 
   select(., otemp = streamwater_temperature)
 
-ggplot(obs_temp, aes(x=seq_along(obs_temp$otemp),
-                     y=obs_temp$otemp)) +
-  ylim(0,16) +
-  geom_point() +
+
+######
+# simulation from simple to complex
+require(hydroGOF)
+
+# plot of observed temperature
+simplot <- ggplot() +
+  geom_line(data=obs_temp, aes(x=seq_along(obs_temp$otemp),
+                               y=obs_temp$otemp), colour = "black", show.legend = T) +
   xlab("week") +
-  ylab("simulated stream water temperature [C°]")+
-  geom_smooth(method = "loess") #confidence intervall seems way too little?! .95 and moste of the points are outside??
+  ylab("stream water temperature [C°]")
+simplot
+
+### just air tempterature
+
+sim1 <- air_gwater_temp[2]
+ggof(sim1$air_temperature, obs_temp$otemp)
+
+simplot <- simplot + geom_line(data=sim1, aes(x=seq_along(sim1$air_temperature),
+                                       y=sim1$air_temperature),
+                    colour = "red")
+simplot
+
+### air temperature and groundwater temperature without discharge weight (just 50-50)
+
+sim_air_stream_water <- air_gwater_temp[2]/2
+sim_gwater_stream_water <- air_gwater_temp[3]/2
+
+sim2 <- as_tibble(sim_air_stream_water+sim_gwater_stream_water) %>% 
+  select(.,stemp=air_temperature)
+
+ggof(sim2$stemp,obs_temp$otemp)
+
+simplot <- simplot + geom_line(data=sim2, aes(x=seq_along(sim2$stemp),
+                                              y=sim2$stemp),
+                               colour = "green")
+simplot
+
+
+### air temperature and groundwater temperature weighted by discharge
+
+sim_air_stream_water <- air_gwater_temp[2]*discharge[2]
+sim_gwater_stream_water <- air_gwater_temp[3]*discharge[3] # auch ienmal ohne proz gewichtung machen"!
+
+sim3 <- as_tibble(sim_air_stream_water+sim_gwater_stream_water) %>% 
+  select(.,stemp=air_temperature)
+
+ggof(sim3$stemp,obs_temp$otemp)
+
+simplot <- simplot + geom_line(data=sim3, aes(x=seq_along(sim3$stemp),
+                                              y=sim3$stemp),
+                               colour = "violet")
+simplot ### way worse than with sim2 (which is just half groundwater temperature and half airtemperature...)
 
 
 
-
-
-require(hydroGOF) ## VARIABLE OBEN ANPASSEN (sim_stream_temp$air_temperature sollte $sim_stream water_temp sein)
-nse <- NSE(sim_temp$stemp,obs_temp$otemp)
-kge <- KGE(sim_temp$stemp,obs_temp$otemp)
-
-
-
-gof(sim_temp$stemp,obs_temp$otemp)
-ggof(sim_temp$stemp,obs_temp$otemp)
-
-
-
-
-## sources
+######## sources
 
 # plot just one variable: https://stackoverflow.com/a/13837856
 
