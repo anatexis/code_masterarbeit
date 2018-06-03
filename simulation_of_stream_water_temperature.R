@@ -7,7 +7,7 @@ detach("package:hydroGOF", unload=TRUE)
 setwd("C:/Users/Russ/Desktop/master/daten/output_R")
 
 # load air_water, discharge files
-file <- "2018-05-27_air_groundwater_weekly_temperature.txt"
+file <- "2018-06-03_air_groundwater_weekly_temperature.txt"
 file2 <- "2018-05-27_percentage_of_fast_and_GW_weekly_discharge.txt"
 
 air_gwater_temp <- read_csv(file, col_names = T)
@@ -40,6 +40,20 @@ simplot <- simplot + geom_line(data=sim1, aes(x=seq_along(sim1$air_temperature),
                                        y=sim1$air_temperature),
                     colour = "red")
 simplot
+
+### just groundwater temperature
+sim_gwater_stream_water <- air_gwater_temp[3]
+
+sim1.2 <- as_tibble(sim_gwater_stream_water) %>% 
+  select(.,stemp=groundwater_temperature)
+
+ggof(sim1.2$stemp,obs_temp$otemp)
+
+simplot <- simplot + geom_line(data=sim1.2, aes(x=seq_along(sim1.2$stemp),
+                                              y=sim1.2$stemp),
+                               colour = "blue")
+simplot
+
 
 ### air temperature and groundwater temperature without discharge weight (just 50-50)
 
