@@ -74,16 +74,30 @@ ggplot(gw_means2, aes(x = quarter, y = quarter_mean), colours=count) +
 # ich probiere einfach mal die quartalswerte für die wochenwerte einzusetzen
 multi <- c(13,13,13,14)
 
+
 gw_temp <- tibble(weeks=seq(1:53),water_temperature=rep(gw_means2$quarter_mean,multi))
 
 setwd ("C:/Users/Russ/Desktop/master/Daten/output_R/")
 
-# # comment out when written
-# # complete data
-# write.table(gw_temp,file = paste(format(Sys.time(), "%Y-%m-%d"),
-#                                 "_weekly_groundwater-temperature", ".txt", sep = "") ,sep=",",
-#             row.names=FALSE,col.names = c("week", "groundwater_temperature"),
-#             eol = "\r\n", quote = F)
+
+### linear interpoliert
+
+t <- c(1,13,26,39,53)
+dat <- gw_means2$quarter_mean
+dat <- append(dat,gw_means2$quarter_mean[1])
+
+f <- approxfun(t,dat)
+
+lin_int_gw <- f(seq(from=1, to=53, by=1))
+plot(lin_int_gw)
+
+gw_temp_linint <- tibble(weeks=seq(1:53),gwater_temperature=lin_int_gw)
+# comment out when written
+# complete data
+write.table(gw_temp_linint,file = paste(format(Sys.time(), "%Y-%m-%d"),
+                                "_weekly_groundwater-temperature_lin_intpol", ".txt", sep = "") ,sep=",",
+            row.names=FALSE,col.names = c("week", "groundwater_temperature"),
+            eol = "\r\n", quote = F)
 
 
 
