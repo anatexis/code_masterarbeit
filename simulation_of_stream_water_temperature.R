@@ -7,7 +7,7 @@ detach("package:hydroGOF", unload=TRUE)
 setwd("C:/Users/Russ/Desktop/master/daten/output_R")
 
 # load air_water, discharge files
-file <- "2018-06-03_air_groundwater_weekly_temperature.txt"
+file <- "2018-06-10_air_groundwater_weekly_temperature.txt"
 file2 <- "2018-05-27_percentage_of_fast_and_GW_weekly_discharge.txt"
 
 air_gwater_temp <- read_csv(file, col_names = T)
