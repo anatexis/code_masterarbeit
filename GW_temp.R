@@ -16,29 +16,20 @@ gw_stations
 ### zusammenfassen der GW-stationen
 # gruppieren nach stationen und quartalen
 # mittlere WT pro quartal pro station
+
+target <- c("PG31900572", "PG31900562")
+
 gw_q_means <- gw_stations %>% 
-  filter(stat!="PG31900832",stat !="PG31900872")%>% #2 stat gefiltert weil zuwenige stationen
+  filter(stat %in% target) %>% # 4 nächste stat
   group_by(stat,quarter) %>% 
   summarise(count = n(),
             quarter_mean = mean(WT)) 
 
-all_gw_q_means <- gw_stations %>% 
-  group_by(stat,quarter) %>% 
-  summarise(count = n(),
-            quarter_mean = mean(WT)) 
-
-
-# # mittlere wt temp pro quartal (ist aber falsch gewichtet, stationen mit wenigen daten
-# # werden im vergleich stärker gewichtet als stationen mit vielen daten)
-# gw_means1 <- gw_q_means %>% 
-#   group_by(quarter) %>% 
-#   summarise(count = n(),
-#             quarter_mean = mean(quarter_mean))
 
 
 # gruppiert nur nach quartalen
 gw_means2 <- gw_stations %>% 
-  filter(stat!="PG31900832",stat !="PG31900872") %>% 
+  filter(stat %in% target) %>% # 2 nächste stat
   group_by(quarter) %>% 
   summarise(count = n(),
             quarter_mean = mean(WT),
@@ -54,17 +45,16 @@ ggplot(gw_q_means, aes(x = quarter, y = quarter_mean)) +
   scale_colour_gradientn(colours=rainbow(6)) +
   facet_grid(quarter~stat)
 
-ggplot(all_gw_q_means, aes(x = quarter, y = quarter_mean)) +
+ggplot(gw_q_means, aes(x = quarter, y = quarter_mean)) +
   geom_point(aes(colour = count), size = 2) +
   scale_colour_gradientn(colours=rainbow(6)) +
-  facet_grid(quarter~stat)
+  facet_grid(stat~quarter)
 
-# maybe remove station
+
 
 
 ggplot(gw_means2, aes(x = quarter, y = quarter_mean), colours=count) +
   geom_point(aes(colour = count), size= 3) +
-  geom_boxplot(aes(quarter)) +
   scale_colour_gradientn(colours=rainbow(6))
 
 # weiß nicht wirklich wie ich die GW-Temperatur ansetzen soll - ich hab das mittel im quartal
@@ -88,7 +78,7 @@ dat <- append(dat,gw_means2$quarter_mean[1])
 
 f <- approxfun(t,dat)
 
-lin_int_gw <- f(seq(from=1, to=53, by=1))
+lin_int_gw <- round(f(seq(from=1, to=53, by=1)),2)
 plot(lin_int_gw)
 
 gw_temp_linint <- tibble(weeks=seq(1:53),gwater_temperature=lin_int_gw)
