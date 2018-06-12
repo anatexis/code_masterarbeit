@@ -94,3 +94,51 @@ simplot ### way worse than with sim2 (which is just half groundwater temperature
 
 ### (to implement for efficiency comparison:) read in (cleaned) dataset of stream-water-temp-stations
 
+
+
+###############################################################################################
+################### test-test-test plot machen wie fig.2 mohseni et al. 1998
+# join obs_t + air_gwater_t 
+
+require(ggrepel)
+
+alltogether <- add_column(air_gwater_temp, obs_temp$otemp)
+alltogether <- plyr::rename(alltogether, c(week="week",
+                                           air_temperature="air_t",
+                                            groundwater_temperature="gwater_t",
+                                           `obs_temp$otemp`="obs_streamw_t"))
+ggplot(alltogether, aes(x=air_t,y=obs_streamw_t)) +
+  geom_path()+
+  geom_point() +
+  geom_label_repel(aes(label = ifelse(week%%2 ==1, as.character(week),"")))
+
+plot(alltogether$air_t, alltogether$obs_streamw_t)
+
+
+### mohseni geschätzt
+mu <- 0.0
+a <- 19
+b <- 10
+gam <- .12
+T_s <- as_tibble(mu+(a-mu)/(1+exp(gam*(b-alltogether$air_t))))
+alltogether_m <- add_column(alltogether, T_s$value)
+alltogether_m <- plyr::rename(alltogether_m, c(week="week",
+                                           air_t="air_t",
+                                           gwater_t="gwater_t",
+                                           obs_streamw_t="obs_streamw_t",
+                                           `T_s$value`="sim_swt_mohseni"))
+
+## plotten
+simplot_test <- ggplot() +
+  geom_line(data=obs_temp, aes(x=seq_along(obs_temp$otemp),
+                               y=obs_temp$otemp), colour = "black", show.legend = T) +
+  xlab("week") +
+  ylab("stream water temperature [C°]")
+simplot_test
+simplot_test+ geom_line(data=T_s, aes(x=seq_along(alltogether_m$sim_swt_mohseni),
+                                       y=alltogether_m$sim_swt_mohseni),
+                        colour = "yellow")
+
+ggof(alltogether_m$sim_swt_mohseni,obs_temp$otemp)
+
+### sources for labeling: https://stackoverflow.com/a/48762376
