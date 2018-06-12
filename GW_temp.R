@@ -8,7 +8,7 @@ file <- "GW_Temp_clean.csv"
 ### read in (cleaned) dataset of GW-temp-stations
 gw_stations <- read_csv(file, col_names = c("stat","quarter","date","WT"),skip=1,
                         col_types = list(col_character(), col_character(), col_date(format = "%d.%m.%Y"), col_double()))
-View(gw_stations)
+#View(gw_stations)
 
 gw_stations
 
@@ -20,7 +20,7 @@ gw_stations
 target <- c("PG31900572", "PG31900562")
 
 gw_q_means <- gw_stations %>% 
-  filter(stat %in% target) %>% # 4 nächste stat
+  filter(stat %in% target) %>% # 2 nächste stat
   group_by(stat,quarter) %>% 
   summarise(count = n(),
             quarter_mean = mean(WT)) 
