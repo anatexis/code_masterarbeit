@@ -16,7 +16,7 @@ setwd(path)
 LTfile1 <- "LT107300.dat"
 LTfile2 <- "LT115642.dat"
 
-#in linux:"Lücke" in win: "L�cke" (is this a problem?)
+#in linux:"Lücke" in win: "L?cke" (is this a problem?)
 #if yes, maybe this helps?: https://stackoverflow.com/a/28461726
 # Station Frankenfels
 LT1 <- read_table(LTfile1, col_names = F, skip = 20,na = "Lücke", 
@@ -84,5 +84,5 @@ abline(lm(LW2$`WT2$Temp`~LW2$Temp), col="red")
 
 summary(lm(LW2$`WT2$Temp`~LW2$Temp))
 
-lot(LW1$`WT1$Temp`)
+plot(LW1$`WT1$Temp`)
 points(LW2[7988:9555,3], col="red")
