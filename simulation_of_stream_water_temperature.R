@@ -141,4 +141,16 @@ simplot_test+ geom_line(data=T_s, aes(x=seq_along(alltogether_m$sim_swt_mohseni)
 
 ggof(alltogether_m$sim_swt_mohseni,obs_temp$otemp)
 
+
+######################## Fehler modell #### error plot
+alltogether_e_p <- add_column(alltogether,
+                              dis_perc_fast = discharge$percentage_Fast,
+                              dis_perc_slow = discharge$percentage_GW )
+error_plot <- ggplot(alltogether_e_p,
+                     aes(x=week,
+                        y = (dis_perc_fast*air_t+dis_perc_slow*gwater_t)-obs_streamw_t))+
+  geom_line()+
+  geom_smooth()
+error_plot
+
 ### sources for labeling: https://stackoverflow.com/a/48762376
