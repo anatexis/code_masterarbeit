@@ -82,12 +82,12 @@ lin_int_gw <- round(f(seq(from=1, to=53, by=1)),2)
 plot(lin_int_gw)
 
 gw_temp_linint <- tibble(weeks=seq(1:53),gwater_temperature=lin_int_gw)
-# comment out when written
-# complete data
-write.table(gw_temp_linint,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                                "_weekly_groundwater-temperature_lin_intpol", ".txt", sep = "") ,sep=",",
-            row.names=FALSE,col.names = c("week", "groundwater_temperature"),
-            eol = "\r\n", quote = F)
+# # comment out when written
+# # complete data
+# write.table(gw_temp_linint,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                                 "_weekly_groundwater-temperature_lin_intpol", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE,col.names = c("week", "groundwater_temperature"),
+#             eol = "\r\n", quote = F)
 
 
 
