@@ -34,12 +34,12 @@ simplot
 ### just air tempterature
 
 sim1 <- air_gwater_temp[2]
-ggof(sim1$air_temperature, obs_temp$otemp)
+#ggof(sim1$air_temperature, obs_temp$otemp)
 
-simplot <- simplot + geom_line(data=sim1, aes(x=seq_along(sim1$air_temperature),
+simplot_at <- simplot + geom_line(data=sim1, aes(x=seq_along(sim1$air_temperature),
                                        y=sim1$air_temperature),
                     colour = "red")
-simplot
+simplot_at
 
 ### just groundwater temperature
 sim_gwater_stream_water <- air_gwater_temp[3]
@@ -47,12 +47,13 @@ sim_gwater_stream_water <- air_gwater_temp[3]
 sim1.2 <- as_tibble(sim_gwater_stream_water) %>% 
   select(.,stemp=groundwater_temperature)
 
-ggof(sim1.2$stemp,obs_temp$otemp)
+#ggof(sim1.2$stemp,obs_temp$otemp)
 
-simplot <- simplot + geom_line(data=sim1.2, aes(x=seq_along(sim1.2$stemp),
-                                              y=sim1.2$stemp),
-                               colour = "blue")
-simplot
+simplot_wt <- simplot +
+  geom_line(data=sim1, aes(x=seq_along(sim1$air_temperature),
+                           y=sim1$air_temperature), colour = "grey") +
+  geom_line(data=sim1.2, aes(x=seq_along(sim1.2$stemp), y=sim1.2$stemp), colour = "red")
+simplot_wt
 
 
 ### air temperature and groundwater temperature without discharge weight (just 50-50)
@@ -63,12 +64,16 @@ sim_gwater_stream_water <- air_gwater_temp[3]/2
 sim2 <- as_tibble(sim_air_stream_water+sim_gwater_stream_water) %>% 
   select(.,stemp=air_temperature)
 
-ggof(sim2$stemp,obs_temp$otemp)
+#ggof(sim2$stemp,obs_temp$otemp)
 
-simplot <- simplot + geom_line(data=sim2, aes(x=seq_along(sim2$stemp),
-                                              y=sim2$stemp),
-                               colour = "green")
-simplot
+simplot_at_wt_uw <- simplot +
+  geom_line(data=sim1.2, aes(x=seq_along(sim1.2$stemp),
+                             y=sim1.2$stemp), colour = "grey")+
+  geom_line(data=sim1, aes(x=seq_along(sim1$air_temperature),
+                           y=sim1$air_temperature), colour = "grey") + 
+  geom_line(data=sim2, aes(x=seq_along(sim2$stemp), y=sim2$stemp), colour = "red")
+
+simplot_at_wt_uw
 
 
 ### air temperature and groundwater temperature weighted by discharge
@@ -79,14 +84,32 @@ sim_gwater_stream_water <- air_gwater_temp[3]*discharge[3] # auch ienmal ohne pr
 sim3 <- as_tibble(sim_air_stream_water+sim_gwater_stream_water) %>% 
   select(.,stemp=air_temperature)
 
-ggof(sim3$stemp,obs_temp$otemp)
+#ggof(sim3$stemp,obs_temp$otemp)
 
-simplot <- simplot + geom_line(data=sim3, aes(x=seq_along(sim3$stemp),
-                                              y=sim3$stemp),
-                               colour = "violet")
-simplot ### way worse than with sim2 (which is just half groundwater temperature and half airtemperature...)
+simplot_at_wt_Qw <- simplot +
+  geom_line(data=sim2, aes(x=seq_along(sim2$stemp),
+                           y=sim2$stemp),colour = "grey")+
+  geom_line(data=sim1.2, aes(x=seq_along(sim1.2$stemp),
+                             y=sim1.2$stemp),colour = "grey")+
+  geom_line(data=sim1, aes(x=seq_along(sim1$air_temperature),
+                           y=sim1$air_temperature),colour = "grey") + 
+  geom_line(data=sim3, aes(x=seq_along(sim3$stemp), y=sim3$stemp),colour = "red") 
 
+simplot_at_wt_Qw ### way worse than with sim2 (which is just half groundwater temperature and half airtemperature...)
 
+### mohseni
+simplot_mohseni <- simplot +
+  geom_line(data=sim2, aes(x=seq_along(sim2$stemp),
+                           y=sim2$stemp),colour = "grey")+
+  geom_line(data=sim1.2, aes(x=seq_along(sim1.2$stemp),
+                             y=sim1.2$stemp),colour = "grey")+
+  geom_line(data=sim1, aes(x=seq_along(sim1$air_temperature),
+                           y=sim1$air_temperature),colour = "grey") + 
+  geom_line(data=sim3, aes(x=seq_along(sim3$stemp), y=sim3$stemp),colour = "grey") +
+  geom_line(data=T_s, aes(x=seq_along(alltogether_m$sim_swt_mohseni),
+                        y=alltogether_m$sim_swt_mohseni),
+          colour = "red")
+simplot_mohseni
 
 ######## sources
 
