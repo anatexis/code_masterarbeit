@@ -2,7 +2,12 @@ library(tidyverse)
 library(lubridate)
 library(stringi)
 detach("package:hydroGOF", unload=TRUE)
-setwd("C:/Users/Russ/Desktop/master/daten/output")
+
+path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/master/daten/output" #stimmt der pfAD?
+if( .Platform$OS.type == "windows" )
+  path <- "C:/Users/Russ/Desktop/master/daten/output"
+setwd(path)
+
 file <- "tt2summary.txt"
 
 ### to get r to read in files with in the form of
@@ -51,21 +56,23 @@ Q <- ggplot(data= weekly_dis)+
 
 Q
 
-setwd("C:/Users/Russ/Desktop/master/plotfiles_weekly")
-file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_weekly",".png",sep="")
-ggsave(file, height = 3.368173, width = 4.27, units = "in")
 
-##to trace my changes copy inputfile.txt to directories of plots
 
-file <- list.files("C:/Users/Russ/Desktop/master/daten/input/",
-                   "inputmodna.txt", full.names = TRUE)
-file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_weekly")
-
-##rename files
-
-# in plotfiles_weekly
-file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
-                                   "_inputmodna", ".txt", sep = ""))
+# setwd("C:/Users/Russ/Desktop/master/plotfiles_weekly")
+# file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_weekly",".png",sep="")
+# ggsave(file, height = 3.368173, width = 4.27, units = "in")
+# 
+# ##to trace my changes copy inputfile.txt to directories of plots
+# 
+# file <- list.files("C:/Users/Russ/Desktop/master/daten/input/",
+#                    "inputmodna.txt", full.names = TRUE)
+# file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_weekly")
+# 
+# ##rename files
+# 
+# # in plotfiles_weekly
+# file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
+#                                    "_inputmodna", ".txt", sep = ""))
 
 
 #sources:
