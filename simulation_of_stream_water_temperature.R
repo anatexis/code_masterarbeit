@@ -47,7 +47,7 @@ sim_gwater_stream_water <- air_gwater_temp[3]
 sim1.2 <- as_tibble(sim_gwater_stream_water) %>% 
   select(.,stemp=groundwater_temperature)
 
-#ggof(sim1.2$stemp,obs_temp$otemp)
+ggof(sim1.2$stemp,obs_temp$otemp)
 
 simplot_wt <- simplot +
   geom_line(data=sim1, aes(x=seq_along(sim1$air_temperature),
@@ -64,7 +64,7 @@ sim_gwater_stream_water <- air_gwater_temp[3]/2
 sim2 <- as_tibble(sim_air_stream_water+sim_gwater_stream_water) %>% 
   select(.,stemp=air_temperature)
 
-#ggof(sim2$stemp,obs_temp$otemp)
+ggof(sim2$stemp,obs_temp$otemp)
 
 simplot_at_wt_uw <- simplot +
   geom_line(data=sim1.2, aes(x=seq_along(sim1.2$stemp),
@@ -84,7 +84,7 @@ sim_gwater_stream_water <- air_gwater_temp[3]*discharge[3] # auch ienmal ohne pr
 sim3 <- as_tibble(sim_air_stream_water+sim_gwater_stream_water) %>% 
   select(.,stemp=air_temperature)
 
-#ggof(sim3$stemp,obs_temp$otemp)
+ggof(sim3$stemp,obs_temp$otemp)
 
 simplot_at_wt_Qw <- simplot +
   geom_line(data=sim2, aes(x=seq_along(sim2$stemp),
