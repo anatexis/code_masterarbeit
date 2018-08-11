@@ -9,11 +9,18 @@ library(lubridate)
 library(reshape)
 
 
-# Einlesen der Niederschlagsdaten & Koordinaten nur die 1971 beginnen
-107177
-107193
-107300
-107466
+# Einlesen der Niederschlagsdaten & Koordinaten, beginnend bei 1981
+
+107177 #schon f Loich verwendet
+107193 #Loich
+107300 #Loich
+107466 #Loich
+
+107318 #neu dazu f Hofstetten
+107334 #neu
+109082 #neu
+109074 #neu
+
 
 path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten"
 if( .Platform$OS.type == "windows" )
@@ -24,6 +31,12 @@ file1 <- "N-Tagessummen-107177.csv"
 file2 <- "N-Tagessummen-107193.csv"
 file3 <- "N-Tagessummen-107300.csv"
 file4 <- "N-Tagessummen-107466.csv"
+
+file5 <- "N-Tagessummen-107318.csv"
+file6 <- "N-Tagessummen-107334.csv"
+file7 <- "N-Tagessummen-109082.csv"
+file8 <- "N-Tagessummen-109074.csv"
+
 
 pst1 <- read_csv2(file1, col_names = F, skip = 23, na = "Lücke",cols(
         X1 = col_date(format = "%d.%m.%Y %T"), 
@@ -45,24 +58,58 @@ pst4 <- read_csv2(file4, col_names = F, skip = 21, na = "Lücke", cols(
 ))
 
 
+pst5 <- read_csv2(file5, col_names = F, skip = 21, na = "Lücke", cols(
+        X1 = col_date(format = "%d.%m.%Y %T"), 
+        X2 = col_double()
+))
+pst6 <- read_csv2(file6, col_names = F, skip = 22, na = "Lücke", cols(
+        X1 = col_date(format = "%d.%m.%Y %T"), 
+        X2 = col_double()
+))
+pst7 <- read_csv2(file7, col_names = F, skip = 21, na = "Lücke", cols(
+        X1 = col_date(format = "%d.%m.%Y %T"), 
+        X2 = col_double()
+))
+pst8 <- read_csv2(file8, col_names = F, skip = 21, na = "Lücke", cols(
+        X1 = col_date(format = "%d.%m.%Y %T"), 
+        X2 = col_double()
+))
+
+
 # last entry is "Lücke" so we cut it off
 
-pst1 <- pst1[as_date(pst1$X1) < as_date("2015-01-01"), ]
-pst2 <- pst2[as_date(pst2$X1) < as_date("2015-01-01"), ]
-pst3 <- pst3[as_date(pst3$X1) < as_date("2015-01-01"), ]
-pst4 <- pst4[as_date(pst4$X1) < as_date("2015-01-01"), ]
+pst1 <- pst1[as_date(pst1$X1) < as_date("2016-01-01"), ]
+pst2 <- pst2[as_date(pst2$X1) < as_date("2016-01-01"), ]
+pst3 <- pst3[as_date(pst3$X1) < as_date("2016-01-01"), ]
+pst4 <- pst4[as_date(pst4$X1) < as_date("2016-01-01"), ]
+pst5 <- pst5[as_date(pst5$X1) < as_date("2016-01-01"), ]
+pst6 <- pst6[as_date(pst6$X1) < as_date("2016-01-01"), ]
+pst7 <- pst7[as_date(pst7$X1) < as_date("2016-01-01"), ]
+pst8 <- pst8[as_date(pst8$X1) < as_date("2016-01-01"), ]
 
+
+# last two stations start at 1981 so we have to cut the others to this date
+
+pst1 <- pst1[as_date(pst1$X1) > as_date("1980-12-31"), ]
+pst2 <- pst2[as_date(pst2$X1) > as_date("1980-12-31"), ]
+pst3 <- pst3[as_date(pst3$X1) > as_date("1980-12-31"), ]
+pst4 <- pst4[as_date(pst4$X1) > as_date("1980-12-31"), ]
+pst5 <- pst5[as_date(pst5$X1) > as_date("1980-12-31"), ]
+pst6 <- pst6[as_date(pst6$X1) > as_date("1980-12-31"), ]
 
 # put all P-data in one data-frame
 
-pst1 <- add_column(pst1,pst2$X2,pst3$X2,pst4$X2)
+pst1 <- add_column(pst1,pst2$X2,pst3$X2,pst4$X2, pst5$X2,pst6$X2,pst7$X2,pst8$X2)
 pst1 <- rename(pst1, c(X1="date",X2="N107177", 'pst2$X2'="N107193",'pst3$X2'="N107300",
-                       'pst4$X2'="N107466"))
+                       'pst4$X2'="N107466",'pst5$X2'="N107318",'pst6$X2'="N107334",
+                       'pst7$X2'="N109082",'pst8$X2'="N109074"))
+pst1
+
 ############ koord
 
 
-File2 <- "_Niederschlagstation_coord.csv" # hat mehr stationen drin als die gleichnamige .ods datei!! 
-xy <- read_csv2(File2, col_names = T, cols(
+filexy <- "_Niederschlagstation_coord.csv" # hat mehr stationen drin als die gleichnamige .ods datei!! 
+xy <- read_csv2(filexy, col_names = T, cols(
         ID = col_character(),
         x = col_double(),
         y = col_double(),
@@ -71,7 +118,8 @@ xy <- read_csv2(File2, col_names = T, cols(
 ))
 
 # get the stations we need
-xy <- filter(xy, ID %in% c("N107177","N107193","N107300","N107466")) # not that good
+xy <- filter(xy, ID %in% c("N107177","N107193","N107300","N107466","N107318",
+                           "N107334","N109082","N109074")) # not that good
 #xy <- filter(xy, start == 1971) # we dont want all 1971s
 
 ######
@@ -80,7 +128,7 @@ P_sum <- colSums(pst1[2:length(pst1)])
 
 ################
 
-# Erstellung eines "data frame" P.int mit den Koordinaten, sowie Jahressummen für die Interpolation
+# Erstellung eines "data frame" P.int mit den Koordinaten, sowie Summe seit 1981 für die Interpolation
 
 P.int <- as.data.frame(xy)
 
@@ -88,9 +136,9 @@ P.int <- as.data.frame(xy)
 
 P.int$P_sum <- P_sum
 
-P.int <- rename(P.int, c(elev = "z"))
+P.int <- rename(P.int, c(elev = "z")) %>% select_(., "ID","x","y","z","P_sum")
 
-# Jahressumme + Koordinaten
+# Summe seit 1981 + Koordinaten
 P.int
 
 #' 
@@ -121,12 +169,10 @@ class(P.int)
 # Laden der Domain (räumliche Ausdehnung), für die die Interpolation durchgef?hrt wird
 # max min long/lat heausfinden dann wie da:
 # http://www.geo.ut.ee/aasa/LOOM02331/R_idw_interpolation.html
-# einen raster machen 111111 
 
-#######NOCH HOFSTETTEN EXTENT RAUSFINDEN111111111111!!!!!!!!!!!!##########
 #make grid
-x.range <- as.numeric(c(15.15, 15.49))  # min/max longitude of the interpolation area (aus gis)
-y.range <- as.numeric(c(47.87, 48.05))  # min/max latitude of the interpolation area (aus gis)
+x.range <- as.numeric(c(15.15, 15.57))  # min/max longitude of the interpolation area (aus gis)
+y.range <- as.numeric(c(47.87, 48.13))  # min/max latitude of the interpolation area (aus gis)
 
 grd <- expand.grid(x = seq(from = x.range[1], to = x.range[2], by = 0.01), y = seq(from = y.range[1], 
                       to = y.range[2], by = 0.01))  # expand points to grid
@@ -146,7 +192,7 @@ setwd(path)
 
 ##### HIER NOCH SHAPE VON HOFSTETTEN ERSTELLEN###########
 
-File <- "basin-loich_thr17000.shp"
+File <- "hofstette_basin.shp" #rechtschreibfehler bei file-benennung
 # DomInfo <- read.table(File, header = TRUE, sep=";", skip = 0, dec=".", stringsAsFactors=FALSE)
 # str(DomInfo)
 # DomInfo <- raster(File)
@@ -179,13 +225,13 @@ if( .Platform$OS.type == "windows" )
 setwd(path)
 
 dsn <- getwd()
-ezg <-readOGR(dsn=dsn,layer="basin-loich-polyline")
-ezg.poly <-readOGR(dsn=dsn,layer="basin-loich_thr17000") #ohne .shp extension
+ezg <-readOGR(dsn=dsn,layer="hofstette_basin_polyline") # polyline
+ezg.poly <-readOGR(dsn=dsn,layer="hofstette_basin") #ohne .shp extension
 #pegel <- readOGR(dsn=dsn,layer="~/Dokumente/BOKU/2017_SS/UE_Hydrologie_WW/BSP2/Einzugsgebietsdaten/PegelSchliefau")
 #riv <- readOGR(dsn=dsn,layer="Fluesse_Domain")
 
-ogrInfo(dsn=dsn,layer="basin-loich_thr17000") #Infos zu Shape-file
-readOGR(dsn=dsn,layer="basin-loich-polyline")
+readOGR(dsn=dsn,layer="hofstette_basin_polyline")
+ogrInfo(dsn=dsn,layer="hofstette_basin") #Infos zu Shape-file
 
 summary(ezg)
 class (ezg)
@@ -266,14 +312,15 @@ P.input.NA$P<- vector("double",nrow(P.input.NA)) #Spalte P initialisieren
 
 #' 
 #' ### Schleife zur Ermittlung des Gebietsniederschlages für jeden Tag
-P.d <- pst1[2:5]
+P.d <- pst1[2:length(pst1)]
 
 P.int.d <- as.data.frame(xy)[1:4]
 P.int.d$P <- vector("double",nrow(xy))
 colnames(P.int.d) <- c("ID","x","y","z","P")
 coordinates(P.int.d) = ~x + y
 #-----------------------------  Dauert ewig, d gibts doch sicher eine andere möglichkeit? ußerdem wird nur 
-for (j in 1:16071) {
+ptm <- proc.time()
+for (j in 1:12783) {
         P.int.d$P <- unlist(P.d[j,]) #unlist: Umwandlung zu vector
         p.tp = krige(P ~ 1, locations=P.int.d, newdata=grd, 
                      nmax = 1)#  "Durchführen der Interpolation"
@@ -281,7 +328,7 @@ for (j in 1:16071) {
         P.sum.tag <- over(ezg.poly, p.tp["var1.pred"], fn=mean) # "Gebietsniederschlag über "over()""
         P.input.NA$P[j] <- P.sum.tag$var1.pred #"Speichern des Gebietsniederschlages"
 }
-
+proctime()-ptm
 #### herrichten für speichern
 #P.input.save <- separate(P.input.NA, date, into = c("year", "month", "day"), sep="-") #stimmt nicht
 #' 
@@ -310,10 +357,13 @@ plot_geb
 #' 
 #' ### Speichern der Zeitreihe der Sommerniederschläge als csv
 ## ------------------------------------------------------------------------
-setwd ("/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output")
+path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output/"
+if( .Platform$OS.type == "windows" )
+        path <- "C:/Users/Russ/Desktop/master/daten/EZG/output/"
+setwd(path)
 # paste(format(Sys.time(), "%Y-%m-%d"),"_P-output", ".pdf", sep = "") to get searchable names
 write.table(P.input.save,file = paste(format(Sys.time(), "%Y-%m-%d"),
-        "_P-output", ".txt", sep = "") ,sep=" ", row.names=FALSE,
+        "_P-output_HOFSTETTEN", ".txt", sep = "") ,sep=" ", row.names=FALSE,
         col.names = F, quote = F)
 #' todo
 #' fehler finden warum die eine station genommen wird und nicht die andere? evetuell andere interpol methode?
