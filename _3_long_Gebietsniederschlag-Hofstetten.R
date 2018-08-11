@@ -328,7 +328,7 @@ for (j in 1:12783) {
         P.sum.tag <- over(ezg.poly, p.tp["var1.pred"], fn=mean) # "Gebietsniederschlag über "over()""
         P.input.NA$P[j] <- P.sum.tag$var1.pred #"Speichern des Gebietsniederschlages"
 }
-proctime()-ptm
+proc.time()-ptm
 #### herrichten für speichern
 #P.input.save <- separate(P.input.NA, date, into = c("year", "month", "day"), sep="-") #stimmt nicht
 #' 
@@ -357,16 +357,12 @@ plot_geb
 #' 
 #' ### Speichern der Zeitreihe der Sommerniederschläge als csv
 ## ------------------------------------------------------------------------
-path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/EZG/output/"
+path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_R/"
 if( .Platform$OS.type == "windows" )
-        path <- "C:/Users/Russ/Desktop/master/daten/EZG/output/"
+        path <- "C:/Users/Russ/Desktop/master/daten/output_R/"
 setwd(path)
 # paste(format(Sys.time(), "%Y-%m-%d"),"_P-output", ".pdf", sep = "") to get searchable names
 write.table(P.input.save,file = paste(format(Sys.time(), "%Y-%m-%d"),
         "_P-output_HOFSTETTEN", ".txt", sep = "") ,sep=" ", row.names=FALSE,
         col.names = F, quote = F)
-#' todo
-#' fehler finden warum die eine station genommen wird und nicht die andere? evetuell andere interpol methode?
-#' mehr sttionen finden zum interpolieren
-#' temoeratur wie interpolieren?
 
