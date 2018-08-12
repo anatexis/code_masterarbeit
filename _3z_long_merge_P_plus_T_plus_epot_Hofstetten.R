@@ -93,4 +93,5 @@ setwd(path)
 write.table(P_T_ET,file = paste(format(Sys.time(), "%Y-%m-%d"),
                                 "P_T_ET-Hofstetten", ".txt", sep = "") ,sep=",",
             row.names=FALSE,col.names = c("Datum", "t", "NSeff", "ET"),
-            eol = "\r\n", quote = F)
+#add if on linux:           eol = "\r\n", 
+                                            quote = F)

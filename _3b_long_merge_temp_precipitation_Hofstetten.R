@@ -62,11 +62,13 @@ setwd(path)
 write.table(P_T,file = paste(format(Sys.time(), "%Y-%m-%d"),
                              "_tnse", ".txt", sep = "") ,sep=",",
             row.names=FALSE, col.names = c("Datum", "t", "NSeff"),
-            eol = "\r\n", quote = F)
+#uncomm if on linux          eol = "\r\n", 
+                                          quote = F)
 
 # removed 29.02
 write.table(P_T2902rm,file = paste(format(Sys.time(), "%Y-%m-%d"),
                                    "_tnse2902rm", ".txt", sep = ""), sep=",",
             row.names=FALSE, col.names = c("Datum", "t", "NSeff"),
-            eol = "\r\n", quote = F)
+#uncomm if on linux          eol = "\r\n", 
+                                           quote = F)
 # file wil be moved to data/input and name will be changend (tnse2902rm_Hofstn) 
