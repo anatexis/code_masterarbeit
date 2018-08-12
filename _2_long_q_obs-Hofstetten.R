@@ -20,7 +20,8 @@ rff <- read_table(file, col_names = F, skip = 27, na = "Lücke", cols(
 sum(is.na(rff[3])) # just 
 
 # #subsetting to epot beobachtungszeitraum bis 2014-01-16 [[loich!]]
-# q_obs <- rff[as_date(rff$X1)<as_date("2014-01-17"), ]
+rff <- rff[as_date(rff$X1)>as_date("1990-12-31"), ]
+rff <- rff[as_date(rff$X1)<as_date("2015-01-01"), ]
 
 
 # selecting only date and q
@@ -28,8 +29,13 @@ sum(is.na(rff[3])) # just
 if (isNamespaceLoaded("raster") == T) detach("package:raster", unload=TRUE)
 q_obs <- select(rff, X1, X3)
 
+# remove 29.02.s
+q_obs <- q_obs[as.numeric(strftime(q_obs$X1, "%m%d")) != 229,]
+
 ## change formate for fortran input
 q_obs$X1 <- format(q_obs$X1, "%d%m%Y") 
+
+
 
 #write
 path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_R"
@@ -39,6 +45,6 @@ setwd(path)
 
 write.table(q_obs,file = paste(format(Sys.time(), "%Y-%m-%d"),
                              "_Hofstetten_q_obs", ".txt", sep = "") ,sep=",",
-            row.names=FALSE, col.names = c("Datum", "Q"),
-            eol = "\r\n", quote = F)
+            row.names=FALSE, col.names = c("Datum", "Q"), quote = F)
+#add:  eol = "\r\n" if on linux
 
