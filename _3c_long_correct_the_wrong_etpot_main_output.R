@@ -1,3 +1,8 @@
+library(tidyverse)
+library(lubridate)
+library(reshape)
+
+
 path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_etpot_main/"
 if( .Platform$OS.type == "windows" )
   path <- "C:/Users/Russ/Desktop/master/daten/output_etpot_main/"
@@ -15,12 +20,29 @@ stri_sub(PET$X1,-4,0) <- "-"
 PET$X1 <- as.Date(PET$X1, "%d-%m-%Y")
 
 
-y <- seq_len(2014-1991)
-
-x <- 365*23 #von 1 bis 23 , ab 2 +1 dazugeben
-PET <- add_row(PET,X1=as.Date(PET$X1[x])+1, X2=PET$X2[x+1],.after=x) 
+## loop through it and then appen it after manipulation
 
 
+# loop
+# initialize vector with 1991 (where everything is allright)
+petout <- PET[1:365,]
+
+for ( i in seq_len(2014-(1991))){
+  
+  #prepare vectors for loop
+  y <- seq_len(2014-1991+2)
+  x <- 365*y 
+  pet <- PET[(x[i]+1):x[i+1],]
+  
+  pet_lag <- pet %>% mutate(X1=lag(pet$X1[1:365],i)) %>% na.omit()
+  
+  pet_korr <- add_row(pet_lag,
+                              X1=as_date((PET$X1[x[i]]-i+2):(PET$X1[x[i]]+1)),
+                              X2=(PET$X2[x[i]+1]):(PET$X2[x[i]+i]),
+                              .before=1) #da passt was noch nicht
+  
+  petout <- petout %>% add_row(.,X1=pet_korr$X1, X2=pet_korr$X2) 
+}
 
 path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_epot_main/"
 if( .Platform$OS.type == "windows" )
@@ -30,13 +52,8 @@ setwd(path)
 
 # commented out when written
 # complete data
-write.table(PET,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                                "petout_hofstn_korr", ".txt", sep = "") ,sep=",",
+write.table(petout,file = paste(format(Sys.time(), "%Y-%m-%d"),
+                             "petout_hofstn_korr", ".txt", sep = "") ,sep=",",
             row.names=FALSE,col.names = F,
-            #add if on linux:           eol = "\r\n", 
+            #add if on linux:           eol = "\r\n",
             quote = F)
-
-
-df <- tibble(x = 1:3, y = 3:1)
-
-add_row(df, x = 4:5, y = 0:-1, .af)
