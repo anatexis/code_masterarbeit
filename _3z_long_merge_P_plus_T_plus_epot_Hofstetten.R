@@ -44,25 +44,26 @@ P_T$`pst_P1$X2` <- round(P_T$`pst_P1$X2`,1)
 #removing all 29.02 from dataframw
 P_T2902rm <- P_T[as.numeric(strftime(P_T$X1, "%m%d")) != 229,]
 
-# add pot ET (calculated from fortran epot_main.for) 
-### achtung bugs! holzmann noch schreiben
+# add pot ET (calculated from fortran epot_main.for) and corrected
+# with "_3clong_correct...output.R" script
 
 path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_etpot_main/"
 if( .Platform$OS.type == "windows" )
   path <- "C:/Users/Russ/Desktop/master/daten/output_etpot_main/"
 setwd(path)
 
-file3 <- "petout_hofstn_korr_korr_libreoffice_export.csv"
+file3 <- "2018-08-15petout_hofstn_korr.txt"
 
-library(stringi)
-### to get r to read in files with in the form of
-### dmmyyy AND ddmmyyy we have to do smt like this:
-PET <- read_table(file3, col_names = c("X1","X2"),col_types = c("c","d")) #schreit fehler aber passt!??
 
-stri_sub(PET$X1,-6,0) <- "-"
-stri_sub(PET$X1,-4,0) <- "-"
-PET$X1 <- as.Date(PET$X1, "%d-%m-%Y")
+PET <- read_csv(file3, col_names = c("X1","X2"),col_types = c("c","d")) #schreit fehler aber passt!??
+# library(stringi)
+# ### to get r to read in files with in the form of
+# ### dmmyyy AND ddmmyyy we have to do smt like this:
+# stri_sub(PET$X1,-6,0) <- "-"
+# stri_sub(PET$X1,-4,0) <- "-"
+# PET$X1 <- as.Date(PET$X1, "%d-%m-%Y")
 
+PET$X1 <- as.Date(PET$X1, "%Y-%m-%d")
 
 PET <- PET[as_date(PET$X1) > as_date("1990-12-31"), ]
 PET <- PET[as_date(PET$X1) < as_date("2015-01-01"), ]
@@ -70,16 +71,8 @@ PET <- PET[as_date(PET$X1) < as_date("2015-01-01"), ]
 # P_T_ET variable with precipitation, temp and Evapotranspiration
 P_T_ET <- add_column(P_T2902rm,PET$X2)
 
-# # start timeseries at 20.11.2012 because thats earliest q observation
-# P_T_ET <- P_T_ET[as_date(P_T_ET$X1) > as_date("2012-12-31"), ]
-
 # change date format for input modna
 P_T_ET$X1 <- format(P_T_ET$X1, "%d%m%Y") 
-
-# #schon davor passiert
-# #removing all 29.02 from dataframe and change formate (there is no 29.02 in ts 
-# # from 20.11.2012-17.01.2014 but maybe we get longer data for q)
-# P_T2902rm <- P_T_ET[as.numeric(strftime(P_T$X1, "%m%d")) != 229,]
 
 
 path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_R/"
