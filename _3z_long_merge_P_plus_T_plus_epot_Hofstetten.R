@@ -81,10 +81,10 @@ if( .Platform$OS.type == "windows" )
 setwd(path)
 
 
-# commented out when written
-# complete data
-write.table(P_T_ET,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                                "P_T_ET-Hofstetten", ".txt", sep = "") ,sep=",",
-            row.names=FALSE,col.names = c("Datum", "t", "NSeff", "ET"),
-#add if on linux:           eol = "\r\n", 
-                                            quote = F)
+# # commented out when written
+# # complete data
+# write.table(P_T_ET,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                                 "P_T_ET-Hofstetten", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE,col.names = c("Datum", "t", "NSeff", "ET"),
+# #add if on linux:           eol = "\r\n", 
+#                                             quote = F)
