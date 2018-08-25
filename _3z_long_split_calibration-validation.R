@@ -77,14 +77,14 @@ write.table(PTET_calib,file = paste(format(Sys.time(), "%Y-%m-%d"),
             #add if on linux:           eol = "\r\n",
             quote = F)
 
-#Qobs_valid
+#Qobs_valid !!!!!!!!!!!!!!!ACHTUNG für input in modna noch eine dummyzeile einfügen!!!!!
 write.table(Qobs_valid,file = paste(format(Sys.time(), "%Y-%m-%d"),
                                     "_Qobs_VALID_Hofstetten", ".txt", sep = "") ,sep=",",
             row.names=FALSE,col.names = c("Datum", "Q"),
             #add if on linux:           eol = "\r\n",
             quote = F)
 
-#Qobs_calib
+#Qobs_calib !!!!!!!!!!!!!!!!ACHTUNG für input in modna noch eine dummyzeile einfügen!!!!!
 write.table(Qobs_calib,file = paste(format(Sys.time(), "%Y-%m-%d"),
                                     "_Qobs_CALIB_Hofstetten", ".txt", sep = "") ,sep=",",
             row.names=FALSE,col.names = c("Datum", "Q"),
