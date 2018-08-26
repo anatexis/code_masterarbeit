@@ -27,15 +27,16 @@ Qobs <- read_csv(file2, col_names = T, cols( Datum = col_date(format = "%d%m%Y")
 ################### for R² on plot#####################
 
 lm_eqn <- function(df,i){
-  date0 <- df[[1]]-1990
+  date0 <- df[[1]]-1991
   m <- lm(df[[i]] ~ date0, df);
-  eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
+  eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(p(slope))~"="~p_slope, 
                    list(a = format(coef(m)[1], digits = 2), 
                         b = format(coef(m)[2], digits = 2), 
-                        r2 = format(summary(m)$r.squared, digits = 3)))
+                        p_slope = format(summary(m)$coefficients[,4][2], digits = 5)))
   as.character(as.expression(eq));                 
 }
 # source:https://stackoverflow.com/a/7549819
+# adapted with https://stackoverflow.com/a/14794775 (point 1) does this work?
 
 ###########################################################
 
@@ -82,6 +83,8 @@ P_t <- ggplot(data = yearly_PTET,aes(x = year, y=t))+
   geom_text(x = 2005, y = 7.5 ,label = lm_eqn(yearly_PTET,2), parse = TRUE) # from above 
 P_t
 
+# slope not significant!
+
 #NSeff
 P_NSeff <- ggplot(data = yearly_PTET,aes(x=year, y=NSeff))+
   geom_line()+
@@ -93,6 +96,8 @@ P_NSeff <- ggplot(data = yearly_PTET,aes(x=year, y=NSeff))+
   geom_text(x = 1998, y = 4.5 ,label = lm_eqn(yearly_PTET,3), parse = TRUE) # from above 
 P_NSeff
 
+# slope not significant!
+
 P_ET <- ggplot(data = yearly_PTET,aes(x=year, y=ET))+
   geom_line()+
   geom_smooth(method="lm")+
@@ -102,6 +107,9 @@ P_ET <- ggplot(data = yearly_PTET,aes(x=year, y=ET))+
   ylab("mean yearly ET") +
   geom_text(x = 2005, y = 1.55 ,label = lm_eqn(yearly_PTET,4), parse = TRUE)
 P_ET
+
+# slope not significant! (but barely)
+
 #
 #
 #
@@ -112,18 +120,20 @@ P_ET
 ### monthly mean per year Qobs
 # dplyr and pipe ftw!
 monthly_Qobs <- Qobs %>%
-  group_by(year = month(Datum))%>%
+  group_by(year = year(Datum), month = month(Datum))%>%
   summarise(
     Qobs = mean(Q))
 
 
 P_Qobs <- ggplot(data= monthly_Qobs,aes(x=year, y=Qobs))+
-  geom_line()+
+  geom_point()+
   geom_smooth(method="lm")+
   #  geom_line( aes(x=month, y=linout, color = "lin"))+
   #  geom_line( aes(x=month, y=cascout, color = "casc"))+
   xlab("Date")+
-  ylab("mean yearly discharge [m³/s]")
+  ylab("mean yearly discharge [m³/s]")+
+  geom_text(x = 2005, y = 20 ,label = lm_eqn(monthly_Qobs,2), parse = TRUE) 
+  
 P_Qobs
 
 
@@ -138,77 +148,42 @@ monthly_PTET <- PTET %>%
 
 #temp
 P_tm <- ggplot(data = monthly_PTET,aes(x = month, y=t))+
-  geom_point()+
-  geom_smooth(method="lm")+
+  geom_point(aes(colour = year))+
+  scale_colour_gradientn(colours=rainbow(24)) +
+ # geom_smooth(method="lm")+
   #  geom_line( aes(x=month, y=linout, color = "lin"))+
   #  geom_line( aes(x=month, y=cascout, color = "casc"))+
   xlab("Date")+
-  ylab("mean monthly Temperature each year")
+  ylab("mean monthly Temperature each year") #+
+  #geom_text(x = 2005, y = 20 ,label = lm_eqn(monthly_PTET,2), parse = TRUE) 
 P_tm
 
-# 
-# # cut timeseries to overlapping period from 01.01.1991 to 16.01.2014 
-# 
-# PTET_valid <- PTET[as_date(PTET$Datum) > as_date("2003-12-31"), ]
-# PTET_calib <- PTET[as_date(PTET$Datum)  < as_date("2004-01-01"), ]
-# 
-# Qobs_valid <- Qobs[as_date(Qobs$Datum) > as_date("2003-12-31"), ]
-# Qobs_calib <- Qobs[as_date(Qobs$Datum) < as_date("2004-01-01"), ]
-# 
-# 
-# 
-# 
-# # change date format for input modna (müsste doch irgendwie mit listen gehen schas)
-# 
-# #function
-# change_date_format<- function(x) {
-#     x[1] <- format(x[[1]],"%d%m%Y")
-# }
-# 
-# 
-# PTET_valid$Datum <- change_date_format(PTET_valid)
-# PTET_calib$Datum <- change_date_format(PTET_calib)
-# Qobs_valid$Datum <- change_date_format(Qobs_valid)
-# Qobs_calib$Datum <- change_date_format(Qobs_calib)
-# 
-# 
-# 
-# 
-# 
-# path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/output_R/"
-# if( .Platform$OS.type == "windows" )
-#   path <- "C:/Users/Russ/Desktop/master/daten/output_R/"
-# setwd(path)
-# 
-# 
-# # commented out when written
-# # complete data
-# 
-# #PTET_valid
-# write.table(PTET_valid,file = paste(format(Sys.time(), "%Y-%m-%d"),
-#                                 "_PTET_VALID_Hofstetten", ".txt", sep = "") ,sep=",",
-#             row.names=FALSE,col.names = c("Datum", "t", "NSeff", "ET"),
-# #add if on linux:           eol = "\r\n",
-#                                             quote = F)
-# 
-# #PTET_calib
-# write.table(PTET_calib,file = paste(format(Sys.time(), "%Y-%m-%d"),
-#                                     "_PTET_CALIB_Hofstetten", ".txt", sep = "") ,sep=",",
-#             row.names=FALSE,col.names = c("Datum", "t", "NSeff", "ET"),
-#             #add if on linux:           eol = "\r\n",
-#             quote = F)
-# 
-# #Qobs_valid !!!!!!!!!!!!!!!ACHTUNG für input in modna noch eine dummyzeile einfügen!!!!!
-# write.table(Qobs_valid,file = paste(format(Sys.time(), "%Y-%m-%d"),
-#                                     "_Qobs_VALID_Hofstetten", ".txt", sep = "") ,sep=",",
-#             row.names=FALSE,col.names = c("Datum", "Q"),
-#             #add if on linux:           eol = "\r\n",
-#             quote = F)
-# 
-# #Qobs_calib !!!!!!!!!!!!!!!!ACHTUNG für input in modna noch eine dummyzeile einfügen!!!!!
-# write.table(Qobs_calib,file = paste(format(Sys.time(), "%Y-%m-%d"),
-#                                     "_Qobs_CALIB_Hofstetten", ".txt", sep = "") ,sep=",",
-#             row.names=FALSE,col.names = c("Datum", "Q"),
-#             #add if on linux:           eol = "\r\n",
-#             quote = F)
-# 
+
+#NSeff
+P_NSeffm <- ggplot(data = monthly_PTET,aes(x = month, y=NSeff))+
+  geom_point(aes(colour = year))+
+  scale_colour_gradientn(colours=rainbow(24)) +
+  # geom_smooth(method="lm")+
+  #  geom_line( aes(x=month, y=linout, color = "lin"))+
+  #  geom_line( aes(x=month, y=cascout, color = "casc"))+
+  xlab("Date")+
+  ylab("mean monthly NSeff each year") #+
+#geom_text(x = 2005, y = 20 ,label = lm_eqn(monthly_PTET,2), parse = TRUE) 
+P_NSeffm
+
+#ET
+P_ETm <- ggplot(data = monthly_PTET,aes(x = month, y=ET))+
+  geom_point(aes(colour = year))+
+  scale_colour_gradientn(colours=rainbow(24)) +
+  # geom_smooth(method="lm")+
+  #  geom_line( aes(x=month, y=linout, color = "lin"))+
+  #  geom_line( aes(x=month, y=cascout, color = "casc"))+
+  xlab("Date")+
+  ylab("mean monthly ET each year") #+
+#geom_text(x = 2005, y = 20 ,label = lm_eqn(monthly_PTET,2), parse = TRUE) 
+P_ETm
+
+########## I CONCLUDE THERE IS NO SIGNIFICANT TREND!! #######################
+#############################################################################
+
+
