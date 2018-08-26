@@ -3,7 +3,7 @@ library(lubridate)
 library(stringi)
 detach("package:hydroGOF", unload=TRUE)
 setwd("C:/Users/Russ/Desktop/master/daten/output")
-file <- "ha2summary.txt"
+file <- "ha1summary.txt"
 
 ### to get r to read in files with in the form of
 ### dmmyyyy AND ddmmyyyy we have to do smt like this:
@@ -18,7 +18,8 @@ discharge$TTMMYYYY <- as.Date(discharge$TTMMYYYY, "%d-%m-%Y")
 #calculate qsim and select output which is interesting for us
 discharge <- discharge %>% mutate(qsim=linout + cascout,qsim_etp=qsim+ETP) %>% 
   select(., TTMMYYYY,NS,Qobs,ETP,ETA,liqwater,linout,cascout,qsim,qsim_etp)
-discharge
+tail(discharge)
+discharge <- head(discharge, -1) # delete last row because its a duplicat (fault lies in modna.f)
 
 sums <- discharge[2:length(discharge)] %>% summarise_all(funs(sum)) %>%
   select(.,NS,qsim_etp,qsim,Qobs)
