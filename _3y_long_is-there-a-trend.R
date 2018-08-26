@@ -125,14 +125,15 @@ monthly_Qobs <- Qobs %>%
     Qobs = mean(Q))
 
 
-P_Qobs <- ggplot(data= monthly_Qobs,aes(x=year, y=Qobs))+
-  geom_point()+
-  geom_smooth(method="lm")+
+P_Qobs <- ggplot(data= monthly_Qobs,aes(x=month, y=Qobs))+
+  geom_point(aes(colour = year))+
+  scale_colour_gradientn(colours=rainbow(24)) +
+ # geom_smooth(method="lm")+
   #  geom_line( aes(x=month, y=linout, color = "lin"))+
   #  geom_line( aes(x=month, y=cascout, color = "casc"))+
   xlab("Date")+
-  ylab("mean yearly discharge [m³/s]")+
-  geom_text(x = 2005, y = 20 ,label = lm_eqn(monthly_Qobs,2), parse = TRUE) 
+  ylab("mean yearly discharge [m³/s]")#+
+ # geom_text(x = 2005, y = 20 ,label = lm_eqn(monthly_Qobs,2), parse = TRUE) 
   
 P_Qobs
 
