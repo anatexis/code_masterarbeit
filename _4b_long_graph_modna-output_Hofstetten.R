@@ -13,6 +13,8 @@ discharge <- read_table(file, col_names = T,
 stri_sub(discharge$TTMMYYYY,-6,0) <- "-"
 stri_sub(discharge$TTMMYYYY,-4,0) <- "-"
 discharge$TTMMYYYY <- as.Date(discharge$TTMMYYYY, "%d-%m-%Y")
+discharge <- head(discharge, -1) # delete last row because its a duplicat (fault lies in modna.f)
+tail(discharge)
 # now the dates are correctly read in
 
 #calculate qsim and select output which is interesting for us

@@ -31,7 +31,28 @@ discharge_ts <- read.zoo(discharge_ts) #read.zoo loses the column names and then
 
 x <- window(discharge_ts, start=as.Date("1991-01-01"))
 
-( m <- daily2monthly(x, FUN=sum) )
+( m <- daily2monthly(x, FUN=mean) )
 
-#######NICHT FERTIG########
+dates <- time(x)
 
+( nyears <- yip(from=start(x), to=end(x), out.type="nmbr" ) )
+
+smry(x)
+
+hydroplot(x, var.type="Flow", main="at gauge Hofstetten",
+          pfreq = "dm", from="1991-01-01")
+
+# Seasonal Analysis
+# 1. Average seasonal values of discharge
+seasonalfunction(x, FUN=sum, na.rm=TRUE) / nyears
+
+# 2. Extracting the seasonal values for each year
+( DJF <- dm2seasonal(x, season="DJF", FUN=sum) )
+( MAM <- dm2seasonal(m, season="MAM", FUN=sum) )
+( JJA <- dm2seasonal(m, season="JJA", FUN=sum) )
+( SON <- dm2seasonal(m, season="SON", FUN=sum) )
+
+# 3. Plotting the time evolution of the seasonal discharge values
+# subset x because otherwise it would be too large
+x1 <- x[1:365]
+hydroplot(x, pfreq="seasonal", FUN=mean, stype="default")

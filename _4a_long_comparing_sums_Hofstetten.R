@@ -13,13 +13,13 @@ discharge <- read_table(file, col_names = T,
 stri_sub(discharge$TTMMYYYY,-6,0) <- "-"
 stri_sub(discharge$TTMMYYYY,-4,0) <- "-"
 discharge$TTMMYYYY <- as.Date(discharge$TTMMYYYY, "%d-%m-%Y")
+discharge <- head(discharge, -1) # delete last row because its a duplicat (fault lies in modna.f)
+tail(discharge)
 # now the dates are correctly read in
 
 #calculate qsim and select output which is interesting for us
 discharge <- discharge %>% mutate(qsim=linout + cascout,qsim_etp=qsim+ETP) %>% 
   select(., TTMMYYYY,NS,Qobs,ETP,ETA,liqwater,linout,cascout,qsim,qsim_etp)
-tail(discharge)
-discharge <- head(discharge, -1) # delete last row because its a duplicat (fault lies in modna.f)
 
 sums <- discharge[2:length(discharge)] %>% summarise_all(funs(sum)) %>%
   select(.,NS,qsim_etp,qsim,Qobs)
