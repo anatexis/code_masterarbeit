@@ -50,10 +50,10 @@ if( .Platform$OS.type == "windows" )
 setwd(path)
 
 
-# commented out when written
-# complete data
-write.table(petout,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                             "petout_hofstn_korr", ".txt", sep = "") ,sep=",",
-            row.names=FALSE,col.names = F,
-            #add if on linux:           eol = "\r\n",
-            quote = F)
+# # commented out when written
+# # complete data
+# write.table(petout,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                              "petout_hofstn_korr", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE,col.names = F,
+#             #add if on linux:           eol = "\r\n",
+#             quote = F)
