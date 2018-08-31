@@ -53,6 +53,9 @@ seasonalfunction(x, FUN=sum, na.rm=TRUE) / nyears
 ( SON <- dm2seasonal(m, season="SON", FUN=sum) )
 
 # 3. Plotting the time evolution of the seasonal discharge values
-# subset x because otherwise it would be too large
-x1 <- x[1:365]
+# didnt work used graphics.off(), par("mar") and par(mar=c(1,1,1,1))
+# than it did work! (par("mar") was originally 5.1,4.1,4.1,2.1)
+# source:https://stackoverflow.com/a/26074211
+# ODER leichtere lösung, einfach das plot fenster größer machen und zwar nach oben! 
+# (ich habs nur waagrecht aufgezogen...)
 hydroplot(x, pfreq="seasonal", FUN=mean, stype="default")
