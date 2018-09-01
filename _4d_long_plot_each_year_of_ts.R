@@ -4,7 +4,7 @@ library(lubridate)
 library(stringi)
 detach("package:hydroGOF", unload=TRUE)
 setwd("C:/Users/Russ/Desktop/master/daten/output")
-file <- "ha1summary.txt" #"ha1summary.txt" #ha1 ist das mit den endwerten von loich, ha2 verändert sich
+file <- "ha2summary.txt" #"ha1summary.txt" #ha1 ist das mit den endwerten von loich, ha2 verändert sich
 
 ### to get r to read in files with in the form of
 ### dmmyyy AND ddmmyyy we have to do smt like this:
@@ -24,7 +24,6 @@ discharge <- discharge %>% mutate(qsim=linout + cascout) %>%
 library(hydroGOF)
 
 setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plot_each_year/")
-file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_monthly",".png",sep="")
 
 
 
@@ -56,3 +55,7 @@ for ( i in seq_len(2002-(1991)+2)){
   
   
 }
+
+
+(nse <- NSE(discharge$qsim,discharge$Qobs))
+(kge <- KGE(discharge$qsim,discharge$Qobs))

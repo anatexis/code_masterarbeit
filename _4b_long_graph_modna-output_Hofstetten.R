@@ -33,12 +33,12 @@ Q <- ggplot(data= discharge)+
   geom_line( aes(x=TTMMYYYY, y=linout, color = "lin"))+
   xlab("Date")+
   ylab("Discharge [mm]")+
-  annotate("text", x=as.Date(15550), y=30,label="nse= ")+
-  annotate("text", x=as.Date(16064), y=30,label=as.character(round(nse,2)))+
-  annotate("text", x=as.Date(15550), y=28,label="kge= ")+
-  annotate("text", x=as.Date(16064), y=28,label=as.character(round(kge,2)))+
-  scale_color_manual(values=c("Qobs"="#00BFC4", "Qsim"="#C77CFF",
-                              "lin"="#7CAE00", "casc"="#F8766D"))
+  annotate("text", x=as.Date(10600), y=30,label="nse= ")+
+  annotate("text", x=as.Date(11000), y=30,label=as.character(round(nse,3)))+
+  annotate("text", x=as.Date(10600), y=28,label="kge= ")+
+  annotate("text", x=as.Date(11000), y=28,label=as.character(round(kge,3)))+
+  scale_color_manual(values=c("Qobs"="#00BFC4", "Qsim"="#F8766D",
+                              "lin"="#7CAE00", "casc"="#C77CFF"))
   
 Q
 setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily/")
@@ -50,10 +50,10 @@ Q_end <- ggplot(data= discharge)+
   geom_line( aes(x=TTMMYYYY, y=qsim, color = ".Qsim"))+
   xlab("Date")+
   ylab("Discharge [mm]")+
-  annotate("text", x=as.Date(15550), y=30,label="nse= ")+
-  annotate("text", x=as.Date(16064), y=30,label=as.character(round(nse,2)))+
-  annotate("text", x=as.Date(15550), y=28,label="kge= ")+
-  annotate("text", x=as.Date(16064), y=28,label=as.character(round(kge,2)))+
+  annotate("text", x=as.Date(10600), y=30,label="nse= ")+
+  annotate("text", x=as.Date(11000), y=30,label=as.character(round(nse,3)))+
+  annotate("text", x=as.Date(10600), y=28,label="kge= ")+
+  annotate("text", x=as.Date(11000), y=28,label=as.character(round(kge,3)))+
   scale_color_manual(values=c("Qobs"="#00BFC4", ".Qsim"="#F8766D"))
 
 Q_end

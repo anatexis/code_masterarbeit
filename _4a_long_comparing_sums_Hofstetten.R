@@ -3,7 +3,7 @@ library(lubridate)
 library(stringi)
 detach("package:hydroGOF", unload=TRUE)
 setwd("C:/Users/Russ/Desktop/master/daten/output")
-file <- "ha1summary.txt"
+file <- "ha2summary.txt"
 
 ### to get r to read in files with in the form of
 ### dmmyyyy AND ddmmyyyy we have to do smt like this:
@@ -22,16 +22,16 @@ discharge <- discharge %>% mutate(qsim=linout + cascout,qsim_etp=qsim+ETP) %>%
   select(., TTMMYYYY,NS,Qobs,ETP,ETA,liqwater,linout,cascout,qsim,qsim_etp)
 
 sums <- discharge[2:length(discharge)] %>% summarise_all(funs(sum)) %>%
-  select(.,NS,qsim_etp,qsim,Qobs)
+  select(.,NS,qsim_etp,Qobs,qsim)
 
 sumplot <- sums %>% 
-  gather(.,data,mm_d,NS:Qobs, factor_key = TRUE)
+  gather(.,data,mm_d,NS:qsim, factor_key = TRUE)
 
 ggplot(data=sumplot, aes(x=data, y=mm_d))+
   geom_bar(stat="identity")
 
 perct <- sums %>% mutate(Qperct=qsim/Qobs*100, NSperct=qsim_etp/NS*100) %>% 
-  select(.,Qperct,NSperct)
+  select(.,NSperct,Qperct)
 
 sums
 perct
