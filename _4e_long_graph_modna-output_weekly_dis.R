@@ -1,3 +1,9 @@
+
+
+#
+# SOMETHING ISNT RIGHT - ICH SCHAFF ES NICHT DEN WOCHENWERT ZU ggPLOTTEN FÜR DEN GESAMTEN ZETIRAUM
+# ES WIRD ENTWEDER ÜBER ALLE 13 jahre gemittelt (x=week) oder jahresmittel genommen (x=year)
+
 library(tidyverse)
 library(lubridate)
 library(stringi)
@@ -27,54 +33,61 @@ discharge <- discharge %>% mutate(qsim=linout + cascout) %>%
   select(., TTMMYYYY,Qobs,qsim,linout,cascout)
 
 ### calculate weekly discharge
-# dplyr and pipe ftw!
 weekly_dis <- discharge %>%
-  group_by(week = week(TTMMYYYY))%>%
+#  mutate(year_week = strftime(TTMMYYYY, format = "%Y-%W", tz = "CET")) %>% 
+  group_by(year = year(TTMMYYYY), week = week(TTMMYYYY)) %>%
   summarise(
       Qobs = mean(Qobs),
       qsim = mean(qsim),
       linout = mean(linout),
       cascout = mean(cascout))
 
+# 
+#       mutate(year_week = year+week)
+#   
+#       mutate(yearweek = paste(as.character(weekly_dis$year),"-",as.character(weekly_dis$week),sep=""))
+# weekly_dis %>%
+#   mutate(yearweek = paste(as.character(weekly_dis$year),"-",as.character(weekly_dis$week),sep=""))
+#  
 
 library(hydroGOF)
 (nse <- NSE(weekly_dis$qsim,weekly_dis$Qobs))
 (kge <- KGE(weekly_dis$qsim,weekly_dis$Qobs))
 
 
-Q_weekly <- ggplot(data= discharge)+
-  geom_line( aes(x=TTMMYYYY, y=cascout, color = "casc"))+
-  geom_line( aes(x=TTMMYYYY, y=linout, color = "lin"))+
-  geom_line( aes(x=TTMMYYYY, y=Qobs, color = "Qobs"))+
-  geom_line( aes(x=TTMMYYYY, y=qsim, color = "Qsim"))+
+Q_weekly <- ggplot(data = weekly_dis)+
+  # geom_line( aes(x=week, y=cascout, color = "casc"))+
+  # geom_line( aes(x=week, y=linout, color = "lin"))+
+  geom_line( aes(x=year, y=Qobs, color = "Qobs"))+
+  # geom_line( aes(x=year, y=qsim, color = "Qsim"))+
   xlab("Date")+
   ylab("Discharge [mm]")+
-  annotate("text", x=as.Date(10600), y=30,label="nse= ")+
-  annotate("text", x=as.Date(11000), y=30,label=as.character(round(nse,3)))+
-  annotate("text", x=as.Date(10600), y=28,label="kge= ")+
-  annotate("text", x=as.Date(11000), y=28,label=as.character(round(kge,3)))+
+  # annotate("text", x=as.Date(10600), y=30,label="nse= ")+
+  # annotate("text", x=as.Date(11000), y=30,label=as.character(round(nse,3)))+
+  # annotate("text", x=as.Date(10600), y=28,label="kge= ")+
+  # annotate("text", x=as.Date(11000), y=28,label=as.character(round(kge,3)))+
   scale_color_manual(values=c("Qobs"="#00BFC4", "Qsim"="#F8766D",
                               "lin"="#7CAE00", "casc"="#C77CFF"))
 
 Q_weekly
 
 
-
-setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_weekly/")
-file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_weekly",".png",sep="")
-ggsave(file, height = 4.64, width = 9.28, units = "in")
-
-##to trace my changes copy inputfile.txt to directories of plots
-
-file <- list.files("C:/Users/Russ/Desktop/master/daten/input/",
-                   "inputmodna.txt", full.names = TRUE)
-file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_weekly/")
-
-##rename files
-
-# in plots_weekly
-file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
-                                   "_inputmodna", ".txt", sep = ""))
+# 
+# setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_weekly/")
+# file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_weekly",".png",sep="")
+# ggsave(file, height = 4.64, width = 9.28, units = "in")
+# 
+# ##to trace my changes copy inputfile.txt to directories of plots
+# 
+# file <- list.files("C:/Users/Russ/Desktop/master/daten/input/",
+#                    "inputmodna.txt", full.names = TRUE)
+# file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_weekly/")
+# 
+# ##rename files
+# 
+# # in plots_weekly
+# file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
+#                                    "_inputmodna", ".txt", sep = ""))
 
 
 #sources:
