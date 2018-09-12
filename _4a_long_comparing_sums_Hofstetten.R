@@ -22,7 +22,8 @@ discharge <- discharge %>% mutate(qsim=linout + cascout,qsim_etp=qsim+ETP) %>%
   select(., TTMMYYYY,NS,Qobs,ETP,ETA,liqwater,linout,cascout,qsim,qsim_etp)
 
 sums <- discharge[2:length(discharge)] %>% summarise_all(funs(sum)) %>%
-  select(.,NS,qsim_etp,Qobs,qsim)
+  mutate(exNS=Qobs+ETP) %>% 
+  select(.,NS,exNS,qsim_etp,Qobs,qsim)
 
 sumplot <- sums %>% 
   gather(.,data,mm_d,NS:qsim, factor_key = TRUE)
@@ -30,14 +31,14 @@ sumplot <- sums %>%
 ggplot(data=sumplot, aes(x=data, y=mm_d))+
   geom_bar(stat="identity")
 
-perct <- sums %>% mutate(Qperct=qsim/Qobs*100, NSperct=qsim_etp/NS*100) %>% 
-  select(.,NSperct,Qperct)
+perct <- sums %>% mutate(Qperct=qsim/Qobs*100, NSperct=qsim_etp/NS*100, exNS=(Qobs+ETP)/NS) %>% 
+  select(.,exNS,NSperct,Qperct) # exNS expected precipitation
 
 sums
 perct
+(diff_etp <- sums$NS-sums$qsim_etp) # - sim too big ; 
+(diff_q <- sums$Qobs-sums$qsim) # - sim too big
 
-#perctplot <- perct %>% gather(.,item,percent,Qperct,NSperct, factor_key = TRUE)
-#ggplot(data=perctplot, mapping = (aes(x=item,y=percent)))+
-#  geom_bar(stat="identity")
+(diff_diffs <- abs(diff_etp)-abs(diff_q)) # when + : more etp ; when -: more discharge
 
   
