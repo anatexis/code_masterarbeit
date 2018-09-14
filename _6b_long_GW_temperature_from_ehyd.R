@@ -14,12 +14,12 @@ if( .Platform$OS.type == "windows" )
   path <- "C:/Users/Russ/Desktop/master/daten/Stationsdaten/"
 setwd(path)
 
-file1 <- "Grundwassertemperatur-Monatsmittel-322891.csv"
-file2 <- "Grundwassertemperatur-Monatsmittel-322917.csv"
-file3 <- "Grundwassertemperatur-Monatsmittel-327106.csv"
-file4 <- "Grundwassertemperatur-Monatsmittel-327122.csv"
-file5 <- "Grundwassertemperatur-Monatsmittel-327148.csv"
-file6 <- "Grundwassertemperatur-Monatsmittel-337055.csv"
+file1 <- "Grundwassertemperatur-Monatsmittel-322917.csv" #1.näheste Station
+file2 <- "Grundwassertemperatur-Monatsmittel-322891.csv" #2.
+file3 <- "Grundwassertemperatur-Monatsmittel-327148.csv" #3.
+file4 <- "Grundwassertemperatur-Monatsmittel-337055.csv" #4.
+file5 <- "Grundwassertemperatur-Monatsmittel-327106.csv" #5.
+file6 <- "Grundwassertemperatur-Monatsmittel-327122.csv" #6. fernste stat
 
 pst1 <- read_csv2(file1, col_names = F, skip = 34, na = "Lücke",cols(
         X1 = col_date(format = "%d.%m.%Y %T"), 
@@ -53,6 +53,7 @@ pst6 <- read_csv2(file6, col_names = F, skip = 34, na = "Lücke", cols(
 )) %>% select(.,X1,X2)
 
 
+
 # last entry is "Lücke" so we cut it off
 
 pst1 <- pst1[as_date(pst1$X1) < as_date("2016-01-01"), ]
@@ -72,14 +73,21 @@ pst6 <- pst6[as_date(pst6$X1) < as_date("2016-01-01"), ]
 # pst5 <- pst5[as_date(pst5$X1) > as_date("1980-12-31"), ]
 # pst6 <- pst6[as_date(pst6$X1) > as_date("1980-12-31"), ]
 
-# put all P-data in one data-frame
 
-pst1 <- add_column(pst1,pst2$X2,pst3$X2,pst4$X2, pst5$X2,pst6$X2)
-pst1 <- rename(pst1, c(X1="date",X2="N107177", 'pst2$X2'="N107193",'pst3$X2'="N107300",
-                       'pst4$X2'="N107466",'pst5$X2'="N107318",'pst6$X2'="N107334",
-                       'pst7$X2'="N109082",'pst8$X2'="N109074"))
 for (i in seq(6)){
   plot_i <- eval(as.symbol(paste("pst",i,sep=""))) # quelle: https://stackoverflow.com/a/32954322
   plot(plot_i, type="l")
   
 }
+
+for (i in seq(6)) {
+  plot_i <- eval(as.symbol(paste("pst",i,sep=""))) # quelle: https://stackoverflow.com/a/32954322
+  ploti <- ggplot(data = plot_i, aes(x = X1, y = X2) )+
+    geom_line()+
+    geom_smooth()+
+    ggtitle(paste("Station"," Nr.", i, sep=""))
+#  print(ploti)
+#  print(max(plot_i$X2, na.rm=T))
+#  print(min(plot_i$X2, na.rm=T))
+   print(tail(plot_i))
+  }
