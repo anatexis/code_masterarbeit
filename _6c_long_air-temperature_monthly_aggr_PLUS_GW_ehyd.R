@@ -130,32 +130,133 @@ gwst6 <- read_csv2(file6, col_names = F, skip = 34, na = "Lücke", cols(
 
 
 
-# last entry is "Lücke" so we cut it off
+# tailor the gw temperature time series' to our calibration time span (which is 1991-2003)
 
-gwst1_short <- gwst1[as_date(gwst1$X1) < as_date("2004-01-01"), ]
-gwst1_short <- gwst1_short[as_date(gwst1_short$X1) > as_date("1990-12-31"), ]
+gwst1_1991_2003 <- gwst1[as_date(gwst1$X1) < as_date("2004-01-01"), ]
+gwst1_1991_2003 <- gwst1_1991_2003[as_date(gwst1_1991_2003$X1) > as_date("1990-12-31"), ]
 # gwst2 <- gwst2[as_date(gwst2$X1) < as_date("2004-01-01"), ] starts after 2003
 # gwst3 <- gwst3[as_date(gwst3$X1) < as_date("2004-01-01"), ] starts after 2003
-gwst4_short <- gwst4[as_date(gwst4$X1) < as_date("2004-01-01"), ]
-gwst4_short <- gwst4_short[as_date(gwst4_short$X1) > as_date("1990-12-31"), ] # starts 1994-06-01
+gwst4_1991_2003 <- gwst4[as_date(gwst4$X1) < as_date("2004-01-01"), ]
+gwst4_1991_2003 <- gwst4_1991_2003[as_date(gwst4_1991_2003$X1) > as_date("1990-12-31"), ] # starts 1994-06-01
 # gwst5 <- gwst5[as_date(gwst5$X1) < as_date("2004-01-01"), ] starts after 2003
 # gwst6 <- gwst6[as_date(gwst6$X1) < as_date("2004-01-01"), ] starts after 2003
 
 gwst1
 air_t_p +
-  geom_line(data = gwst1_short, aes(x=X1, y=X2), color="red")
+  geom_line(data = gwst1_1991_2003, aes(x=X1, y=X2), color="red")
 
 air_t_p +
-  geom_line(data = gwst4_short, aes(x=X1, y=X2), color="red")
+  geom_line(data = gwst4_1991_2003, aes(x=X1, y=X2), color="red")
 
 ggplot()+
   geom_line(data = gwst1, aes(x=X1, y=X2), color="red") +
-  geom_line(data = gwst2, aes(x=X1, y=X2), color="green") +
-  geom_line(data = gwst3, aes(x=X1, y=X2), color="blue") +
+  # geom_line(data = gwst2, aes(x=X1, y=X2), color="green") +
+  # geom_line(data = gwst3, aes(x=X1, y=X2), color="blue") +
   geom_line(data = gwst4, aes(x=X1, y=X2), color="black") +
-  geom_line(data = gwst5, aes(x=X1, y=X2), color="yellow") +
-  geom_line(data = gwst6, aes(x=X1, y=X2), color="grey") +
+  # geom_line(data = gwst5, aes(x=X1, y=X2), color="yellow") +
+  # geom_line(data = gwst6, aes(x=X1, y=X2), color="grey") +
   scale_x_date(date_labels="%y",date_breaks  ="1 year")
-  
 
-## ab 2011 plotten??
+## von 1991 bis 2003 (nur gwst1 und gwst4)
+
+ggplot()+
+  geom_line(data = gwst1_1991_2003, aes(x=X1, y=X2, color="gwst1")) +
+  geom_smooth(data = gwst1_1991_2003, aes(x=X1, y=X2, color="gwst1"),method="lm") +
+  geom_line(data = gwst4_1991_2003, aes(x=X1, y=X2, color="gwst4")) +
+  geom_smooth(data = gwst4_1991_2003, aes(x=X1, y=X2, color="gwst4"),method="lm") +
+  scale_colour_discrete("Groundwater Station") +
+  scale_x_date(date_labels="%m/%y",date_breaks  ="6 months")
+
+## ab 2011 plotten (außer gwst1 + gwst4 fangen alle stationen frühestens 2011 an)
+
+gwst1_2011 <- gwst1[265:length(gwst1$X2),]
+gwst4_2011 <- gwst4[200:length(gwst4$X2),]
+
+ggplot()+
+  geom_line(data = gwst1_2011, aes(x=X1, y=X2, color="gwst1")) +
+  geom_smooth(data = gwst1_2011, aes(x=X1, y=X2, color="gwst1"),method="lm") +
+  # geom_line(data = gwst2, aes(x=X1, y=X2, color="gwst2")) +
+  # geom_smooth(data = gwst2, aes(x=X1, y=X2, color="gwst2"),method="lm") +
+  # geom_line(data = gwst3, aes(x=X1, y=X2, color="gwst3")) +
+  # geom_smooth(data = gwst3, aes(x=X1, y=X2, color="gwst3"),method="lm") +
+  # geom_line(data = gwst4_2011, aes(x=X1, y=X2, color="gwst4")) +
+  # geom_smooth(data = gwst4_2011, aes(x=X1, y=X2, color="gwst4"),method="lm") +
+  # geom_line(data = gwst5, aes(x=X1, y=X2, color="gwst5")) +
+  # geom_smooth(data = gwst5, aes(x=X1, y=X2, color="gwst5"),method="lm") +
+  # geom_line(data = gwst6, aes(x=X1, y=X2, color="gwst6")) +
+  # geom_smooth(data = gwst6, aes(x=X1, y=X2, color="gwst6"),method="lm") +
+  scale_colour_discrete("Groundwater Station") +
+  scale_x_date(date_labels="%m/%y",date_breaks  ="3 months")
+
+# ab 2004 
+gwst1_2004 <- gwst1[181:length(gwst1$X2),]
+gwst4_2004 <- gwst4[116:length(gwst4$X2),]
+
+ggplot()+
+  geom_line(data = gwst1_2004, aes(x=X1, y=X2, color="gwst1")) +
+  geom_smooth(data = gwst1_2004, aes(x=X1, y=X2, color="gwst1"),method="lm") +
+  geom_line(data = gwst2, aes(x=X1, y=X2, color="gwst2")) +
+  geom_smooth(data = gwst2, aes(x=X1, y=X2, color="gwst2"),method="lm") +
+  geom_line(data = gwst3, aes(x=X1, y=X2, color="gwst3")) +
+  geom_smooth(data = gwst3, aes(x=X1, y=X2, color="gwst3"),method="lm") +
+  geom_line(data = gwst4_2004, aes(x=X1, y=X2, color="gwst4")) +
+  geom_smooth(data = gwst4_2004, aes(x=X1, y=X2, color="gwst4"),method="lm") +
+  geom_line(data = gwst5, aes(x=X1, y=X2, color="gwst5")) +
+  geom_smooth(data = gwst5, aes(x=X1, y=X2, color="gwst5"),method="lm") +
+  geom_line(data = gwst6, aes(x=X1, y=X2, color="gwst6")) +
+  geom_smooth(data = gwst6, aes(x=X1, y=X2, color="gwst6"),method="lm") +
+  scale_colour_discrete("Groundwater Station") +
+  scale_x_date(date_labels="%m/%y",date_breaks  ="3 months")
+
+############################################################################
+################## interpolation#######################################
+
+
+gwst1_ts <- xts(gwst1[,-1], order.by = gwst1$X1)
+gwst1_ts_1989 <- gwst1_ts[1:13,]
+plot(gwst1_ts_1989)
+
+# vor 1989 haben wir nichts, deswegen startet t (=die wochen) mit der 2. woche also 
+# mitte Jänner
+t <- seq(from=2, to=53, by=4)
+dat <- gwst1_ts_1989$X2
+
+f <- approxfun(t,dat)
+
+lin_int_gw <- round(f(seq(from=1, to=53, by=1)),2)
+plot(lin_int_gw) # gleicher plot wie monatlich! nice!
+
+
+# test mit 2003 (geht auch ohne umformung in xts objekt)
+gw_2003 <- gwst1$X2[168:182] # dez 2002 bis jan 2004
+plot(gw_2003)
+
+t <- seq(from=-2, to=54, by=4)
+dat <- gw_2003
+
+f <- approxfun(t,dat)
+
+lin_int_gw <- round(f(seq(from=1, to=53, by=1)),2)
+plot(lin_int_gw) # gleicher plot wie monatlich! nice!
+
+### und jetzt eine loop!
+
+for(i in seq(2003-1991+1)){
+  gw_year <- gwst1[24:length(gwst1$X2),]
+  
+  dat_i <- gw_year$X2[((i-1)*12+1):(i*12+3)]
+  
+  t <- seq(from=-2, to=54, by=4)
+  
+  f <- approxfun(t,dat_i)
+  
+  lin_int_gw <- tibble(week=1:53,gw_temp=round(f(seq(from=1, to=53, by=1)),2))
+  
+  ploti <- ggplot(data = lin_int_gw, aes(x = week, y=gw_temp) )+
+    geom_line()+
+    ggtitle(paste("Year", i+1990, sep=" "))
+  print(ploti)
+}
+# achtung 1995 fehlen viele daten!
+
+gwst1[is.na(gwst1$X2),] #das sind die jahre wo nas vorkommen
