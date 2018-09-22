@@ -18,27 +18,27 @@ tail(discharge)
 # now the dates are correctly read in
 
 #calculate qsim and select output which is interesting for us
-discharge <- discharge %>% mutate(qsim=linout + cascout,qsim_etp=qsim+ETP) %>% 
-  select(., TTMMYYYY,NS,Qobs,ETP,ETA,liqwater,linout,cascout,qsim,qsim_etp)
+discharge <- discharge %>% mutate(qsim=linout + cascout,qsim_eta=qsim+ETA) %>% 
+  select(., TTMMYYYY,NS,Qobs,ETP,ETA,liqwater,linout,cascout,qsim,qsim_eta)
 
 sums <- discharge[2:length(discharge)] %>% summarise_all(funs(sum)) %>%
-  mutate(exNS=Qobs+ETP) %>% 
-  select(.,NS,exNS,qsim_etp,Qobs,qsim)
+  mutate(exNS=Qobs+ETA) %>% 
+  select(.,exNS,NS,qsim_eta,Qobs,qsim)
 
 sumplot <- sums %>% 
-  gather(.,data,mm_d,NS:qsim, factor_key = TRUE)
+  gather(.,data,mm_d,exNS:qsim, factor_key = TRUE)
 
 ggplot(data=sumplot, aes(x=data, y=mm_d))+
   geom_bar(stat="identity")
 
-perct <- sums %>% mutate(Qperct=qsim/Qobs*100, NSperct=qsim_etp/NS*100, exNS=(Qobs+ETP)/NS) %>% 
+perct <- sums %>% mutate(Qperct=qsim/Qobs*100, NSperct=qsim_eta/NS*100, exNS=(exNS)/NS*100) %>% 
   select(.,exNS,NSperct,Qperct) # exNS expected precipitation
 
 sums
 perct
-(diff_etp <- sums$NS-sums$qsim_etp) # - sim too big ; 
+(diff_eta <- sums$NS-sums$qsim_eta) # - sim too big ; 
 (diff_q <- sums$Qobs-sums$qsim) # - sim too big
 
-(diff_diffs <- abs(diff_etp)-abs(diff_q)) # when + : more etp ; when -: more discharge
+(diff_diffs <- abs(diff_eta)-abs(diff_q)) # when + : more eta ; when -: more discharge
 
   
