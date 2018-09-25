@@ -18,11 +18,11 @@ tail(discharge)
 # now the dates are correctly read in
 
 #calculate qsim and select output which is interesting for us
-discharge <- discharge %>% mutate(qsim=linout + cascout,qsim_etp=qsim+ETP) %>% 
-  select(., TTMMYYYY,NS,Qobs,ETP,ETA,liqwater,linout,cascout,qsim,qsim_etp)
+discharge <- discharge %>% mutate(qsim=linout + cascout,qsim_eta=qsim+ETA) %>% 
+  select(., TTMMYYYY,NS,Qobs,ETP,ETA,liqwater,linout,cascout,qsim,qsim_eta)
 
 sums <- discharge[2:length(discharge)] %>% summarise_all(funs(sum)) %>%
-  select(.,NS,qsim_etp,Qobs,qsim)
+  select(.,NS,qsim_eta,Qobs,qsim)
 
 sumplot <- sums %>% 
   gather(.,data,mm_d,NS:qsim, factor_key = TRUE)
@@ -30,7 +30,7 @@ sumplot <- sums %>%
 ggplot(data=sumplot, aes(x=data, y=mm_d))+
   geom_bar(stat="identity")
 
-perct <- sums %>% mutate(Qperct=qsim/Qobs*100, NSperct=qsim_etp/NS*100) %>% 
+perct <- sums %>% mutate(Qperct=qsim/Qobs*100, NSperct=qsim_eta/NS*100) %>% 
   select(.,NSperct,Qperct)
 
 sums
