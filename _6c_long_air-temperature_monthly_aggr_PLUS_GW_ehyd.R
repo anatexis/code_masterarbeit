@@ -77,7 +77,7 @@ air_t_p <- ggplot()+
   geom_line(data=ts_month_t, aes(x = Index, y=Temp))+ #quelle: https://stackoverflow.com/a/43345938
   scale_x_date(date_labels="%y",date_breaks  ="1 year") #https://stackoverflow.com/a/41856325
 
-
+air_t_p
 
 ####################################################################
 ################ GROUND WATER TEMPERATURE ##########################
