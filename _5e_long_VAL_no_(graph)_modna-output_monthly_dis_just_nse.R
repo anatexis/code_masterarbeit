@@ -32,10 +32,10 @@ tail(discharge)
 discharge <- discharge %>% mutate(qsim=linout + cascout) %>% 
   select(., TTMMYYYY,Qobs,qsim,linout,cascout)
 
-### calculate weekly discharge
-weekly_dis <- discharge %>%
-#  mutate(year_week = strftime(TTMMYYYY, format = "%Y-%W", tz = "CET")) %>% 
-  group_by(year = year(TTMMYYYY), week = week(TTMMYYYY)) %>%
+### calculate monthly discharge
+monthly_dis <- discharge %>%
+#  mutate(year_month = strftime(TTMMYYYY, format = "%Y-%W", tz = "CET")) %>% 
+  group_by(year = year(TTMMYYYY), month = month(TTMMYYYY)) %>%
   summarise(
       Qobs = mean(Qobs),
       qsim = mean(qsim),
@@ -44,5 +44,6 @@ weekly_dis <- discharge %>%
 
 
 library(hydroGOF)
-(nse <- NSE(weekly_dis$qsim,weekly_dis$Qobs))
-(kge <- KGE(weekly_dis$qsim,weekly_dis$Qobs))
+(nse <- NSE(monthly_dis$qsim,monthly_dis$Qobs))
+(kge <- KGE(monthly_dis$qsim,monthly_dis$Qobs))
+

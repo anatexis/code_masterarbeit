@@ -1,4 +1,4 @@
-# validation ts of daily values aggregated to weekly values
+# validation ts of daily values aggregated to monthly values
 #install.packages("hydroTSM")
 library(tidyverse)
 library(lubridate)
@@ -22,7 +22,7 @@ tail(discharge)
 
 library(hydroGOF)
 
-setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/VAL_plot_weekly_each_year/")
+setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/VAL_plot_monthly_each_year/")
 
 
 # group_by was put in the loop
@@ -36,7 +36,7 @@ for ( i in seq_len(2013-(2004)+2)){
   discharge_plot_w <- discharge_plot %>% 
     mutate(qsim=linout + cascout) %>% 
     select(., TTMMYYYY,Qobs,qsim,linout,cascout) %>%
-    group_by(week = week(TTMMYYYY))%>% ### calculate weekly discharge
+    group_by(month = month(TTMMYYYY))%>% ### calculate monthly discharge
     summarise(
       Qobs = mean(Qobs),
       qsim = mean(qsim),
@@ -49,10 +49,10 @@ for ( i in seq_len(2013-(2004)+2)){
   year <- 2003 + i
   
   Q <- ggplot(data= discharge_plot_w)+
-    geom_line( aes(x=week, y=Qobs, color = "Qobs"))+
-    geom_line( aes(x=week, y=qsim, color = "Qsim"))+
-    geom_line( aes(x=week, y=linout, color = "lin"))+
-    geom_line( aes(x=week, y=cascout, color = "casc"))+
+    geom_line( aes(x=month, y=Qobs, color = "Qobs"))+
+    geom_line( aes(x=month, y=qsim, color = "Qsim"))+
+    geom_line( aes(x=month, y=linout, color = "lin"))+
+    geom_line( aes(x=month, y=cascout, color = "casc"))+
     ggtitle(paste("In the Year", year, "NSE is ",round(nse,2))) +
     xlab("Date")+
     ylab("Discharge [mm]")+
