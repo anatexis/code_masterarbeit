@@ -36,7 +36,7 @@ for ( i in seq_len(2002-(1991)+2)){
   discharge_plot_w <- discharge_plot %>% 
     mutate(qsim=linout + cascout) %>% 
     select(., TTMMYYYY,Qobs,qsim,linout,cascout) %>%
-    group_by(month = month(TTMMYYYY))%>% ### calculate weekly discharge
+    group_by(month = month(TTMMYYYY))%>% ### calculate monthly discharge
     summarise(
       Qobs = mean(Qobs),
       qsim = mean(qsim),
