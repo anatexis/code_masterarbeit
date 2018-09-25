@@ -39,9 +39,9 @@ ts_month <- apply.monthly(discharge_ts,FUN=mean) # a xts object
 #plot(monthlyTS) # with plot(), this looks better
 #plot(ts_month)   # looks not good with plot()
 
-ggplot()+
+AT_p <- ggplot()+
   geom_line(data=ts_month, aes(x = Index, y=Qobs))
-
+AT_p
 autoplot(as.zoo(ts_month), geom = "line")
 
 
@@ -207,4 +207,52 @@ ggplot()+
   geom_smooth(data = gwst6, aes(x=X1, y=X2, color="gwst6"),method="lm") +
   scale_colour_discrete("Groundwater Station") +
   scale_x_date(date_labels="%m/%y",date_breaks  ="3 months")
+
+
+################################################################################################
+###################                  Einlesen der WT-Daten             #########################
+################################################################################################
+
+path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten"
+if( .Platform$OS.type == "windows" )
+  path <- "C:/Users/Russ/Desktop/master/daten/Stationsdaten/"
+setwd(path)
+
+wtfile <- "WT-Tagesmitte-Hofstetten(Bad).dat"
+
+
+# Station Hofstetten
+WT <- read_table(wtfile, col_names = F, skip = 31,na = "Lücke", cols(
+  X1 = col_date(format = "%d.%m.%Y"), 
+  X2 = col_time("%T"),
+  X3 = col_double()
+)) %>% select(., date=X1, WTemp=X3)
+
+#subset to 1991-2003
+
+WT <- WT[as_date(WT$date) < as_date("2004-01-01"), ]
+WT <- WT[as_date(WT$date) > as_date("1990-12-31"), ]
+
+
+WT_ts <- xts(WT[,-1], order.by = WT$date)
+
+WT_ts
+
+# create time series
+WT_ts_m <- apply.monthly(WT_ts,FUN=mean)
+
+#plot (here: ggplot2)
+
+WT_p <- ggplot()+
+  geom_line(data=WT_ts_m, aes(x = Index, y=WTemp, color = "Streamwatertemp"))+ #quelle: https://stackoverflow.com/a/43345938
+  scale_x_date(date_labels="%y",date_breaks  ="1 year") #https://stackoverflow.com/a/41856325
+
+WT_p
+
+
+############ ALLL TOOOGEEETHER NOW
+
+WT_p+
+  geom_line(data = gwst1_1991_2003, aes(x=X1, y=X2, color="Groundwatertemp")) +
+  geom_line(data=ts_month_t, aes(x = Index, y=Temp, color="Airtemp"))
 
