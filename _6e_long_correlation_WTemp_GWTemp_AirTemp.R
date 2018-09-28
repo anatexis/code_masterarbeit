@@ -112,6 +112,66 @@ WT_m <- WT %>%
 #########################################################################################
 
 
-(cor(data.frame(WT_m$WTemp,AT_m$AirTemp))) ## very high corr!
+## correlation matrix WT / AT / GWT
 
-(cor(data.frame(WT_m$WTemp,GWT_m$GWTemp))) ## have to remove nas!
+(cor(data.frame(WT_m$WTemp,AT_m$AirTemp,GWT_m$GWTemp), use = "pairwise.complete.obs"))
+# pairwise.complete.obs just removes na when comparing pairs not whole row! (corr of WT&AT uneffected bc there are
+# no NAs) Source: https://stackoverflow.com/a/18892108
+## correlation between WT & AT is very high
+## correlation between WT & GWT and AT & GWT is negative (shift!)
+
+
+## cross correlation
+WT <- WT_m$WTemp
+AT <- AT_m$AirTemp
+GWT <- GWT_m$GWTemp
+
+ccWT_AT <- ccf(WT,AT,lag.max = 10)
+ccWT_AT
+
+ccWT_GWT <- ccf(WT,GWT,lag.max = 10, na.action = na.pass)
+ccWT_GWT
+
+Find_Abs_Max_CCF<- function(a,b) # source https://stackoverflow.com/a/20133091
+{
+  d <- ccf(a, b, plot = FALSE, lag.max = length(a)-5, na.action = na.pass)
+  cor = d$acf[,,1]
+  abscor = abs(d$acf[,,1])
+  lag = d$lag[,,1]
+  res = data.frame(cor,lag)
+  absres = data.frame(abscor,lag)
+  absres_max = res[which.max(absres$abscor),]
+  return(absres_max)
+}
+
+Find_Abs_Max_CCF(WT,GWT) # so with a lag of -3 (months) there is a correlation of 0.85!
+
+
+### multiple regression
+
+input <- data.frame(WT,AT,GWT)
+
+# Create the relationship model.
+model <- lm(WT~AT+GWT, data = input)
+
+# Show the model
+print(model)
+summary(model)
+#plot(model)
+
+# getting the intercept and the coeff
+
+a <- coef(model)[1] #interc
+X1 <- coef(model)[2] #AT
+X2 <- coef(model)[3] #GWT
+
+#model: WT_m <- a+AT*X1+GWT*X2
+
+WT_m <- a+AT*X1+GWT*X2
+WT_m
+WT
+plot(WT_m, type="l")
+plot(WT, type="l")
+
+cor(data.frame(WT_m,WT),use = "pairwise.complete.obs")
+plot(data.frame(WT_m,WT))
