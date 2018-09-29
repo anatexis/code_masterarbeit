@@ -10,28 +10,56 @@ detach("package:hydroGOF", unload=TRUE)
 ###################                Einlesen der AirT-Daten             #########################
 ################################################################################################
 
-
 setwd("C:/Users/Russ/Desktop/master/daten/output")
-file2 <- "ha2snowglaz01.txt"
-#use tt2snowglaz01 to get the air temperature
-airtemp <- read_table(file2, col_names = T,
+
+############ CALIBRATION PERIOD ###########################
+
+file_c <- "ha2snowglaz01.txt"
+#use ha2snowglaz01 to get the air temperature f calibration period
+airtemp_c <- read_table(file_c, col_names = T,
                       cols(TTMMYYY = "c",
                            .default=col_double())) %>% slice(-1)
 
-stri_sub(airtemp$TTMMYYY,-6,0) <- "-"
-stri_sub(airtemp$TTMMYYY,-4,0) <- "-"
-airtemp$TTMMYYY <- as.Date(airtemp$TTMMYYY, "%d-%m-%Y")
-airtemp <- head(airtemp, -1) 
+stri_sub(airtemp_c$TTMMYYY,-6,0) <- "-"
+stri_sub(airtemp_c$TTMMYYY,-4,0) <- "-"
+airtemp_c$TTMMYYY <- as.Date(airtemp_c$TTMMYYY, "%d-%m-%Y")
+airtemp_c <- head(airtemp_c, -1) 
 # now the dates are correctly read in
 
 # for plots see _6c_ !!
 
 # aggregate months
-AT_m <- airtemp %>% select(., date=TTMMYYY,AirTemp=Temp)%>%
+AT_m_c <- airtemp_c %>% select(., date=TTMMYYY,AirTemp=Temp)%>%
   group_by(year = year(date),
            month = month(date))%>% ### calculate monthly mean temp
   summarise(AirTemp = mean(AirTemp))
 
+
+############ VALIDATION PERIOD ################################
+
+file_v <- "ha3snowglaz01.txt"
+#use ha3snowglaz01 to get the air temperature f validation period
+airtemp_v <- read_table(file_v, col_names = T,
+                      cols(TTMMYYY = "c",
+                           .default=col_double())) %>% slice(-1)
+
+stri_sub(airtemp_v$TTMMYYY,-6,0) <- "-"
+stri_sub(airtemp_v$TTMMYYY,-4,0) <- "-"
+airtemp_v$TTMMYYY <- as.Date(airtemp_v$TTMMYYY, "%d-%m-%Y")
+airtemp_v <- head(airtemp_v, -1) 
+# now the dates are correctly read in
+
+# for plots see _6c_ !!
+
+# aggregate months
+AT_m_v <- airtemp_v %>% select(., date=TTMMYYY,AirTemp=Temp)%>%
+  group_by(year = year(date),
+           month = month(date))%>% ### calculate monthly mean temp
+  summarise(AirTemp = mean(AirTemp))
+
+################### merge the two datasets ##########
+#source:https://www.statmethods.net/management/merging.html
+AT_m <- rbind(AT_m_c, AT_m_v) # now we have the air temperature data from 1991 to 2014
 
 
 ################################################################################################
@@ -61,14 +89,14 @@ for(i in seq(6)){
 # der loop oben macht das gleiche wie in _6c_ ab Zeile 100
 
 
-# subset to 1991-2003
+# subset to 1991-2014
 gwst1
-gwtemp_m <- gwst1[as_date(gwst1$date) < as_date("2004-01-01"), ]
+gwtemp_m <- gwst1[as_date(gwst1$date) < as_date("2015-01-01"), ]
 GWT_m <- gwtemp_m[as_date(gwtemp_m$date) > as_date("1990-12-31"), ]
 tail(gwtemp_m)
 # jahre in denen NAs vorkommen:
 
-gwst1[is.na(gwst1$GWTemp),] 
+gwst1[is.na(gwst1$GWTemp),]  # 2016 nicht mehr in subsetting bereich
 
 gwtemp_m[is.na(gwtemp_m$GWTemp),]
 plot(gwtemp_m,type="l")
@@ -94,9 +122,9 @@ WT <- read_table(wtfile, col_names = F, skip = 31,na = "Lücke", cols(
   X3 = col_double()
 )) %>% select(., date=X1, WTemp=X3)
 
-#subset to 1991-2003
+#subset to 1991-2014
 
-WT <- WT[as_date(WT$date) < as_date("2004-01-01"), ]
+WT <- WT[as_date(WT$date) < as_date("2015-01-01"), ]
 WT <- WT[as_date(WT$date) > as_date("1990-12-31"), ]
 
 # aggregate months
@@ -105,6 +133,12 @@ WT_m <- WT %>%
            month = month(date))%>% ### calculate monthly mean temp
   summarise(WTemp = mean(WTemp))
   
+#fehlende Daten
+
+WT_m_NA <- WT_m[is.na(WT_m$WTemp),] # von 2014-6 bis 2016-10 (29 Datenpkt) fehlen und 2008-6
+View(WT_m_NA)  #
+
+plot(WT_m$WTemp, type="l")
 
 #########################################################################################
 #########################################################################################
@@ -126,7 +160,7 @@ WT <- WT_m$WTemp
 AT <- AT_m$AirTemp
 GWT <- GWT_m$GWTemp
 
-ccWT_AT <- ccf(WT,AT,lag.max = 10)
+ccWT_AT <- ccf(WT,AT,lag.max = 10, na.action=na.pass)
 ccWT_AT
 
 ccWT_GWT <- ccf(WT,GWT,lag.max = 10, na.action = na.pass)
@@ -144,15 +178,18 @@ Find_Abs_Max_CCF<- function(a,b) # source https://stackoverflow.com/a/20133091
   return(absres_max)
 }
 
-Find_Abs_Max_CCF(WT,GWT) # so with a lag of -3 (months) there is a correlation of 0.85!
+Find_Abs_Max_CCF(WT,GWT) # so with a lag of -4 (months) there is a correlation of 0.85! (with calibration period its a lag of -3)
 
 
-### multiple regression
+### multiple regression 
 
 input <- data.frame(WT,AT,GWT)
+input1 <- input[1:161,]
+input2 <- input[191:288,]
+
 
 # Create the relationship model.
-model <- lm(WT~AT+GWT, data = input)
+model <- lm(WT~AT+GWT, data = input1)
 
 # Show the model
 print(model)
@@ -167,11 +204,11 @@ X2 <- coef(model)[3] #GWT
 
 #model: WT_m <- a+AT*X1+GWT*X2
 
-WT_m <- a+AT*X1+GWT*X2
-WT_m
+WT_model <- a+input2$AT*X1+input2$GWT*X2
+WT_model
 WT
-plot(WT_m, type="l")
-plot(WT, type="l")
+plot(WT_model, type="l")
+lines(input2$WT, col="red")
 
-cor(data.frame(WT_m,WT),use = "pairwise.complete.obs")
-plot(data.frame(WT_m,WT))
+cor(data.frame(WT_model,input2$WT),use = "pairwise.complete.obs")
+plot(data.frame(WT_model,input2$WT))
