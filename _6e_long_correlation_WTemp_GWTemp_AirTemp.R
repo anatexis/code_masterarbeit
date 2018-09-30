@@ -136,7 +136,7 @@ WT_m <- WT %>%
 #fehlende Daten
 
 WT_m_NA <- WT_m[is.na(WT_m$WTemp),] # von 2014-6 bis 2016-10 (29 Datenpkt) fehlen und 2008-6
-View(WT_m_NA)  #
+#View(WT_m_NA)  
 
 plot(WT_m$WTemp, type="l")
 
@@ -187,6 +187,9 @@ input <- data.frame(WT,AT,GWT)
 input1 <- input[1:161,]
 input2 <- input[191:288,]
 
+# 
+pairs(input1, gap=0, cex.labels=0.9)
+
 
 # Create the relationship model.
 model <- lm(WT~AT+GWT, data = input1)
@@ -194,7 +197,10 @@ model <- lm(WT~AT+GWT, data = input1)
 # Show the model
 print(model)
 summary(model)
-#plot(model)
+plot(model)
+# intepretation of plot (sources: https://stats.stackexchange.com/a/65864)
+# 1st plot( residuals vs fitted): there is some nonlinearity!! (change model!)  (source: https://stats.stackexchange.com/a/76228)
+
 
 # getting the intercept and the coeff
 
@@ -212,3 +218,74 @@ lines(input2$WT, col="red")
 
 cor(data.frame(WT_model,input2$WT),use = "pairwise.complete.obs")
 plot(data.frame(WT_model,input2$WT))
+
+
+#########################################################################
+### try model with a GWT with lag!
+Find_Abs_Max_CCF(input1$WT,input1$GWT) # lag -3
+
+###preparatioin for lag (we have to include 3 more months because we will lose three bc of lag -3)
+
+
+    path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten"
+    if( .Platform$OS.type == "windows" )
+      path <- "C:/Users/Russ/Desktop/master/daten/Stationsdaten/"
+    setwd(path)
+    
+    file1 <- "Grundwassertemperatur-Monatsmittel-322917.csv"
+    
+    gwst1 <- read_csv2(file1, col_names = F, skip = 34, na = "Lücke",cols(
+      X1 = col_date(format = "%d.%m.%Y %T"), 
+      X2 = col_double()
+    )) %>% select(.,date=X1,GWTemp=X2)
+    
+    #subset to 1991-2014 + 3 months
+    gwst1
+    gwtemp_m <- gwst1[as_date(gwst1$date) < as_date("2015-04-01"), ]
+    GWT_m <- gwtemp_m[as_date(gwtemp_m$date) > as_date("1990-12-31"), ]
+    tail(gwtemp_m)
+    
+    
+    GWT_m_lag <- lead(GWT_m$GWTemp, 3) #lead 3 is the same as lag -3
+    GWT_m_lag <- GWT_m_lag[1:288] # to remove the last three NAs
+
+# end of preparation
+
+(cor(data.frame(WT_m$WTemp,GWT_m_lag), use = "pairwise.complete.obs")) #!! 0.87
+(cor(data.frame(AT,GWT_m_lag), use = "pairwise.complete.obs", method="pearson")) #Air temperature and Groundwatertemperature are highly correlated
+    
+    
+
+input_lag <- data.frame(WT,AT,GWT_m_lag)
+input1_lag <- input_lag[1:161,]
+input2_lag <- input_lag[191:288,]
+
+pairs(input1_lag, gap=0, cex.labels=0.9)
+
+
+# Create the relationship model.
+model_lag <- lm(WT~AT+GWT_m_lag, data = input1_lag)
+
+# Show the model
+print(model_lag)
+summary(model_lag)
+plot(model_lag)
+
+
+# getting the intercept and the coeff
+
+a <- coef(model_lag)[1] #interc
+X1 <- coef(model_lag)[2] #AT
+X2 <- coef(model_lag)[3] #GWT
+
+#model_lag: WT_m <- a+AT*X1+GWT*X2
+
+WT_model_lag <- a+input2_lag$AT*X1+input2_lag$GWT_m_lag*X2
+WT_model_lag
+WT
+plot(WT_model_lag, type="l")
+lines(input2_lag$WT, col="red")
+
+cor(data.frame(WT_model_lag,input2_lag$WT),use = "pairwise.complete.obs")
+plot(data.frame(WT_model_lag,input2_lag$WT))
+
