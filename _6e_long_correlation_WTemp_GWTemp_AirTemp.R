@@ -7,6 +7,72 @@ library(xts)
 detach("package:hydroGOF", unload=TRUE)
 
 ################################################################################################
+###################                Einlesen der Q-Daten             #########################
+################################################################################################
+
+setwd("C:/Users/Russ/Desktop/master/daten/output")
+
+############ CALIBRATION PERIOD ###########################
+
+qfile_c <- "ha2summary.txt"
+
+### dmmyyy AND ddmmyyy we have to do smt like this:
+discharge <- read_table(qfile_c, col_names = T,
+                        cols(TTMMYYYY = "c",
+                             .default=col_double()))
+stri_sub(discharge$TTMMYYYY,-6,0) <- "-"
+stri_sub(discharge$TTMMYYYY,-4,0) <- "-"
+discharge$TTMMYYYY <- as.Date(discharge$TTMMYYYY, "%d-%m-%Y")
+discharge_c <- head(discharge, -1)
+
+# now the dates are correctly read in
+#calculate qsim and select output which is interesting for us
+discharge_c <- discharge_c %>% mutate(qsim=linout + cascout) %>%
+  select(., TTMMYYYY,Qobs)
+
+# for plots see _6c_ !!
+
+# aggregate months
+Q_m_c <- discharge_c %>% select(., date=TTMMYYYY,Qobs=Qobs)%>%
+  group_by(year = year(date),
+           month = month(date))%>% ### calculate monthly mean temp
+  summarise(Qobs = mean(Qobs))
+
+
+############ VALIDATION PERIOD ################################
+
+qfile_v <- "ha3summary.txt"
+
+### dmmyyy AND ddmmyyy we have to do smt like this:
+discharge <- read_table(qfile_v, col_names = T,
+                        cols(TTMMYYYY = "c",
+                             .default=col_double()))
+stri_sub(discharge$TTMMYYYY,-6,0) <- "-"
+stri_sub(discharge$TTMMYYYY,-4,0) <- "-"
+discharge$TTMMYYYY <- as.Date(discharge$TTMMYYYY, "%d-%m-%Y")
+discharge_v <- head(discharge, -1)
+
+# now the dates are correctly read in
+#calculate qsim and select output which is interesting for us
+discharge_v <- discharge_v %>% mutate(qsim=linout + cascout) %>%
+  select(., TTMMYYYY,Qobs)
+
+# for plots see _6c_ !!
+
+# aggregate months
+Q_m_v <- discharge_v %>% select(., date=TTMMYYYY,Qobs=Qobs)%>%
+  group_by(year = year(date),
+           month = month(date))%>% ### calculate monthly mean temp
+  summarise(Qobs = mean(Qobs))
+
+
+################### merge the two datasets ##########
+#source:https://www.statmethods.net/management/merging.html
+
+
+Q_m <- rbind(Q_m_c, Q_m_v) # now we have the discharge data from 1991 to 2014
+
+################################################################################################
 ###################                Einlesen der AirT-Daten             #########################
 ################################################################################################
 
@@ -197,6 +263,8 @@ model <- lm(WT~AT+GWT, data = input1)
 # Show the model
 print(model)
 summary(model)
+mean(model$residuals)
+acf(model$residuals)
 plot(model)
 # intepretation of plot (sources: https://stats.stackexchange.com/a/65864)
 # 1st plot( residuals vs fitted): there is some nonlinearity!! (change model!)  (source: https://stats.stackexchange.com/a/76228)
@@ -220,9 +288,10 @@ cor(data.frame(WT_model,input2$WT),use = "pairwise.complete.obs")
 plot(data.frame(WT_model,input2$WT))
 
 
-#########################################################################
+#############################################################################
 ### try model with a GWT with lag!
-Find_Abs_Max_CCF(input1$WT,input1$GWT) # lag -3
+##############################################################
+Find_Abs_Max_CCF(input1$WT,input1$GWT) #we use lag -3
 
 ###preparatioin for lag (we have to include 3 more months because we will lose three bc of lag -3)
 
@@ -249,12 +318,19 @@ Find_Abs_Max_CCF(input1$WT,input1$GWT) # lag -3
     GWT_m_lag <- lead(GWT_m$GWTemp, 3) #lead 3 is the same as lag -3
     GWT_m_lag <- GWT_m_lag[1:288] # to remove the last three NAs
 
-# end of preparation
+    
+# end of preparation ########################
 
-(cor(data.frame(WT_m$WTemp,GWT_m_lag), use = "pairwise.complete.obs")) #!! 0.87
-(cor(data.frame(AT,GWT_m_lag), use = "pairwise.complete.obs", method="pearson")) #Air temperature and Groundwatertemperature are highly correlated
     
-    
+# correlation table
+cor(data.frame(Q_m$Qobs,WT_m$WTemp,AT_m$AirTemp,GWT_m_lag),use = "pairwise.complete.obs")
+# WT, AT, GWT_lag are highly correlated! (not inependent)
+pairs(data.frame(Q_m$Qobs,WT_m$WTemp,AT_m$AirTemp,GWT_m_lag),use = "pairwise.complete.obs")
+
+### split again in calibration and validation
+# calibration from 1991 to 2004-6 
+# validation from 2008-10 to 2014
+# 2004-6 to 2008-10 : period where there is no data of water temperature
 
 input_lag <- data.frame(WT,AT,GWT_m_lag)
 input1_lag <- input_lag[1:161,]
