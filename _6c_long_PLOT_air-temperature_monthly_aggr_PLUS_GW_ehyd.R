@@ -34,7 +34,7 @@ discharge_ts
 # 2 möglichkeiten:
 ts_month <- apply.monthly(discharge_ts,FUN=mean) # a xts object
 
-#monthlyTS <- aggregate(discharge_ts, as.yearmon, mean) # a zoo objetct
+monthlyTS <- aggregate(discharge_ts, as.yearmon, mean) # a zoo objetct
 
 #plot(monthlyTS) # with plot(), this looks better
 #plot(ts_month)   # looks not good with plot()
@@ -149,10 +149,12 @@ air_t_p +
   geom_line(data = gwst4_1991_2003, aes(x=X1, y=X2), color="red")
 
 ggplot()+
-  geom_line(data = gwst1, aes(x=X1, y=X2), color="red") +
+  geom_line(data = gwst1, aes(x=X1, y=X2, color="gwst1")) +
+  geom_smooth(data = gwst1, aes(x=X1, y=X2, color="gwst1"), method = "lm")+
   # geom_line(data = gwst2, aes(x=X1, y=X2), color="green") +
   # geom_line(data = gwst3, aes(x=X1, y=X2), color="blue") +
-  geom_line(data = gwst4, aes(x=X1, y=X2), color="black") +
+  geom_line(data = gwst4, aes(x=X1, y=X2, color="gwst4")) +
+  geom_smooth(data = gwst4, aes(x=X1, y=X2, color="gwst4"), method = "lm") +
   # geom_line(data = gwst5, aes(x=X1, y=X2), color="yellow") +
   # geom_line(data = gwst6, aes(x=X1, y=X2), color="grey") +
   scale_x_date(date_labels="%y",date_breaks  ="1 year")
