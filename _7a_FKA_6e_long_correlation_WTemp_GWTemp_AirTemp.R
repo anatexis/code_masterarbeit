@@ -98,7 +98,9 @@ lines(valid$WT, col="red")
 
 cor(data.frame(WT_model,valid$WT),use = "pairwise.complete.obs")
 plot(data.frame(WT_model,valid$WT))
+require(hydroGOF)
 
+ggof(WT_model,valid$WT,ylab=c("T, [°C]"))
 
 #############################################################################
 ### try model with a GWT with lag!
@@ -180,6 +182,8 @@ lines(valid_lag$WT, col="red")
 cor(data.frame(WT_model_lag,valid_lag$WT),use = "pairwise.complete.obs")
 plot(data.frame(WT_model_lag,valid_lag$WT))
 
+
+ggof(WT_model_lag,valid_lag$WT,ylab=c("T, [°C]"))
 
 ############################################################
 # our model
