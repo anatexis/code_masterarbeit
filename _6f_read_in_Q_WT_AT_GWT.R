@@ -186,7 +186,7 @@ gwst1 <- read_csv2(file1, col_names = F, skip = 34, na = "Lücke",cols(
 
 #subset to 1991-2014 + 3 months
 gwst1
-gwtemp_m2 <- gwst1[as_date(gwst1$date) < as_date("2015-04-01"), ]
+gwtemp_m <- gwst1[as_date(gwst1$date) < as_date("2015-04-01"), ]
 GWT_m2 <- gwtemp_m[as_date(gwtemp_m$date) > as_date("1990-12-31"), ]
 tail(gwtemp_m2)
 
