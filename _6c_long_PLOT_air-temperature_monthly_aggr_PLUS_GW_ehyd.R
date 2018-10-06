@@ -23,7 +23,7 @@ discharge <- head(discharge, -1)
 
 #calculate qsim and select output which is interesting for us
 discharge_ts <- discharge %>% mutate(qsim=linout + cascout) %>%
-  select(., TTMMYYYY,Qobs)
+  select(., TTMMYYYY,qsim)
 
 #convert tp timeseries!! Quelle: https://cran.r-project.org/web/packages/timetk/timetk.pdf tk_xts
 
@@ -40,7 +40,7 @@ monthlyTS <- aggregate(discharge_ts, as.yearmon, mean) # a zoo objetct
 #plot(ts_month)   # looks not good with plot()
 
 AT_p <- ggplot()+
-  geom_line(data=ts_month, aes(x = Index, y=Qobs))
+  geom_line(data=ts_month, aes(x = Index, y=qsim))
 AT_p
 autoplot(as.zoo(ts_month), geom = "line")
 
