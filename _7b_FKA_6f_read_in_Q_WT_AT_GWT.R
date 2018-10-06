@@ -188,11 +188,10 @@ gwst1 <- read_csv2(file1, col_names = F, skip = 34, na = "Lücke",cols(
 gwst1
 gwtemp_m <- gwst1[as_date(gwst1$date) < as_date("2015-04-01"), ]
 GWT_m2 <- gwtemp_m[as_date(gwtemp_m$date) > as_date("1990-12-31"), ]
-tail(gwtemp_m2)
 
-
-GWT_m_lag <- lead(GWT_m2$GWTemp, 3) #lead 3
-GWT_m_lag <- GWT_m_lag[1:288] # to remove the last three NAs
+GWT_m_lag <- GWT_m2
+GWT_m_lag$GWTemp <- lead(GWT_m2$GWTemp, 3) #lead 3
+GWT_m_lag <- GWT_m_lag[1:288,] # to remove the last three NAs
 
 
 # end of preparation ########################
