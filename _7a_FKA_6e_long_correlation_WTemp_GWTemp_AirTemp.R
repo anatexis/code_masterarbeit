@@ -6,7 +6,7 @@
 
 setwd("C:/Users/Russ/Desktop/master/code_masterarbeit/")
 
-source("_6f_read_in_Q_WT_AT_GWT.R") #anscheinend funktionierts trozt den warnungen!
+source("_7b_FKA_6f_read_in_Q_WT_AT_GWT.R") #anscheinend funktionierts trozt den warnungen!
 
 
 detach("package:hydroGOF", unload=TRUE)
@@ -189,4 +189,5 @@ ggof(WT_model_lag,valid_lag$WT,ylab=c("T, [°C]"))
 # our model
 
 #model_wt <- 
+
 
