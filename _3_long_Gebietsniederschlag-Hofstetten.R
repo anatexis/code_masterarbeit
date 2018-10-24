@@ -258,7 +258,7 @@ catch = list("sp.lines", ezg, col="black", lwd=2.5, fill="transparent") # ezg st
 P.stations <- list('sp.points', P.int, col='black', pch=17, cex=1.8)
 
 
-spplot(p.tp["var1.pred"], main = "Gebietsniederschlag",
+spplot(p.tp["var1.pred"], main = "Areal Precipitation",
        sp.layout = list( arrow, catch, P.stations, scale, text1, text2),
        col.regions=jet.colors)
 
