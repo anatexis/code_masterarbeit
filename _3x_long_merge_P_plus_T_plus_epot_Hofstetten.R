@@ -26,7 +26,7 @@ pst_P <- read_table(file1, col_names = F, cols( X1 = col_date(format = "%d%m%Y")
 pst_T <- read_table(file2, col_names = F, cols( X1 = col_date(format = "%d%m%Y"),
                                                 X2 = col_double()
                                                 ))
-# cut timeseries to overlapping period from 01.01.1991 to 16.01.2014 
+# cut timeseries to overlapping period from 01.01.1991 to 31.12.2014 
 
 pst_P1 <- pst_P[as_date(pst_P$X1) > as_date("1990-12-31"), ]
 pst_P1 <- pst_P1[as_date(pst_P1$X1) < as_date("2015-01-01"), ]
