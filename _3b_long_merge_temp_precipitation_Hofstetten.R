@@ -1,6 +1,8 @@
 
 ######
-# for precipitation + temp + Evapotranspiration see "merge_plus_epot.R"
+# used as input for etpot_main.for
+# for the input for modna.f (precipitation + temp + Evapotranspiration)
+# see "_3x_long_merge_P_plus_T_plus_epot_Hofstetten.R"
 #####
 library(tidyverse)
 library(lubridate)
@@ -27,7 +29,9 @@ pst_P <- read_table(file1, col_names = F, cols( X1 = col_date(format = "%d%m%Y")
 pst_T <- read_table(file2, col_names = F, cols( X1 = col_date(format = "%d%m%Y"),
                                                 X2 = col_double()
 ))
-# cut timeseries to overlapping period from 01.01.1991 to 16.01.2014 
+# cut timeseries to overlapping period from 01.01.1991 to 31.12.2015
+# the etpot_main.for program cuts doesn't read the last year in (as a whole)
+# so to use the year 2014 we need the year 2015 as input data.
 
 pst_P1 <- pst_P[as_date(pst_P$X1) > as_date("1990-12-31"), ]
 pst_P1 <- pst_P1[as_date(pst_P1$X1) < as_date("2016-01-01"), ]
