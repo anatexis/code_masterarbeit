@@ -41,9 +41,9 @@ Q <- ggplot(data= discharge)+
                               "lin"="#7CAE00", "casc"="#C77CFF"))
   
 Q
-setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily/")
-file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q",".png",sep="")
-ggsave(file, height = 4.64, width = 9.28, units = "in")
+# setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily/")
+# file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q",".png",sep="")
+# ggsave(file, height = 4.64, width = 9.28, units = "in")
 
 Q_end <- ggplot(data= discharge)+
   geom_line( aes(x=TTMMYYYY, y=Qobs, color = "Qobs"))+
@@ -58,27 +58,27 @@ Q_end <- ggplot(data= discharge)+
 
 Q_end
 
-setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily_Q-END//")
-file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_END",".png",sep="")
-ggsave(file, height = 4.64, width = 9.28, units = "in")
-
-##to trace my changes copy inputfile.txt to directories of plots
-
-file <- list.files("C:/Users/Russ/Desktop/master/daten/input/",
-                    "inputmodna.txt", full.names = TRUE)
-file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily/")
-file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily_Q-END/")
-
-##rename files
-
-# in plots_daily_Q_END
-file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
-                                   "_inputmodna", ".txt", sep = ""))
-# in plots_daily
-setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily/")
-file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
-                                   "_inputmodna", ".txt", sep = ""))
-
+# setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily_Q-END//")
+# file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_END",".png",sep="")
+# ggsave(file, height = 4.64, width = 9.28, units = "in")
+# 
+# ##to trace my changes copy inputfile.txt to directories of plots
+# 
+# file <- list.files("C:/Users/Russ/Desktop/master/daten/input/",
+#                     "inputmodna.txt", full.names = TRUE)
+# file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily/")
+# file.copy(file,"C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily_Q-END/")
+# 
+# ##rename files
+# 
+# # in plots_daily_Q_END
+# file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
+#                                    "_inputmodna", ".txt", sep = ""))
+# # in plots_daily
+# setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily/")
+# file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
+#                                    "_inputmodna", ".txt", sep = ""))
+# 
 
 #sources:
 

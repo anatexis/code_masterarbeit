@@ -50,8 +50,8 @@ for ( i in seq_len(2002-(1991)+2)){
     scale_color_manual(values=c("Qobs"="#00BFC4", "Qsim"="#F8766D",
                                 "lin"="#7CAE00", "casc"="grey"))
   print(Q) # zum anzeigen
-  ggsave(Q,filename=paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),file,"_",year,".png",sep=""),
-         height = 3.368173, width = 4.27, units = "in")
+  # ggsave(Q,filename=paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),file,"_",year,".png",sep=""),
+  #        height = 3.368173, width = 4.27, units = "in")
   
   
 }
