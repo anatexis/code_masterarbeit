@@ -159,7 +159,7 @@ GWT_m <- gwtemp_m[as_date(gwtemp_m$date) > as_date("1990-12-31"), ]
 tail(gwtemp_m)
 # jahre in denen NAs vorkommen:
 
-gwst1[is.na(gwst1$GWTemp),]  # 2016 nicht mehr in subsetting bereich
+GWT_m[is.na(GWT_m$GWTemp),]  # 2016 nicht mehr in subsetting bereich
 
 gwtemp_m[is.na(gwtemp_m$GWTemp),]
 plot(gwtemp_m,type="l")
@@ -169,29 +169,29 @@ GWT_m # from 1991 to 2014 without lag
 ######################
 
 
-###preparatioin for lag (we have to include 3 more months because we will lose three bc of lag -3)
-
-
-path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten"
-if( .Platform$OS.type == "windows" )
-  path <- "C:/Users/Russ/Desktop/master/daten/Stationsdaten/"
-setwd(path)
-
-file1 <- "Grundwassertemperatur-Monatsmittel-322917.csv"
-
-gwst1 <- read_csv2(file1, col_names = F, skip = 34, na = "Lücke",cols(
-  X1 = col_date(format = "%d.%m.%Y %T"), 
-  X2 = col_double()
-)) %>% select(.,date=X1,GWTemp=X2)
-
-#subset to 1991-2014 + 3 months
-gwst1
-gwtemp_m <- gwst1[as_date(gwst1$date) < as_date("2015-04-01"), ]
-GWT_m2 <- gwtemp_m[as_date(gwtemp_m$date) > as_date("1990-12-31"), ]
-
-GWT_m_lag <- GWT_m2
-GWT_m_lag$GWTemp <- lead(GWT_m2$GWTemp, 3) #lead 3
-GWT_m_lag <- GWT_m_lag[1:288,] # to remove the last three NAs
+# ###preparatioin for lag (we have to include 3 more months because we will lose three bc of lag -3)
+# 
+# 
+# path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten"
+# if( .Platform$OS.type == "windows" )
+#   path <- "C:/Users/Russ/Desktop/master/daten/Stationsdaten/"
+# setwd(path)
+# 
+# file1 <- "Grundwassertemperatur-Monatsmittel-322917.csv"
+# 
+# gwst1 <- read_csv2(file1, col_names = F, skip = 34, na = "Lücke",cols(
+#   X1 = col_date(format = "%d.%m.%Y %T"), 
+#   X2 = col_double()
+# )) %>% select(.,date=X1,GWTemp=X2)
+# 
+# #subset to 1991-2014 + 3 months
+# gwst1
+# gwtemp_m <- gwst1[as_date(gwst1$date) < as_date("2015-04-01"), ]
+# GWT_m2 <- gwtemp_m[as_date(gwtemp_m$date) > as_date("1990-12-31"), ]
+# 
+# GWT_m_lag <- GWT_m2
+# GWT_m_lag$GWTemp <- lead(GWT_m2$GWTemp, 3) #lead 3
+# GWT_m_lag <- GWT_m_lag[1:288,] # to remove the last three NAs
 
 
 # end of preparation ########################
