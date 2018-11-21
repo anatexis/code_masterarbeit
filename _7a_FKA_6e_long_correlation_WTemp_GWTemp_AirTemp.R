@@ -56,7 +56,7 @@ Find_Abs_Max_CCF<- function(a,b) # source https://stackoverflow.com/a/20133091
   return(absres_max)
 }
 
-Find_Abs_Max_CCF(GWT,WT) # so with a lag of 4 (months) there is a correlation of 0.85! (with calibration period its a lag of -3)
+Find_Abs_Max_CCF(GWT,WT) # so with a lag of 4 (months) there is a correlation of 0.85! (with calibration period its a lag of 3)
 
 
 ### multiple regression 
@@ -109,7 +109,7 @@ Find_Abs_Max_CCF(calib$GWT, calib$WT) #there is a lag of 3 so we have to use a l
 # The lag k value returned by ccf(x, y) estimates the correlation between x[t+k] and y[t]. (from ccf help)
 
 
-###preparatioin for lag (we have to include 3 more months because we will lose three bc of lag -3)
+###preparatioin for lag (we have to include 3 more months because we will lose three bc of lag 3)
 
 
     path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten"
