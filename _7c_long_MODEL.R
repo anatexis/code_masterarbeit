@@ -1,6 +1,6 @@
 
 #########################################################################################
-###################         READ IN DATA WITH SCRIPT (first: clear all)            #########################
+###################         READ IN DATA WITH SCRIPT (first: clear all)    ##############
 #########################################################################################
 
 # rm(list = ls()) #clear objects from workspace (uncomment it)
@@ -16,12 +16,9 @@ detach("package:hydroGOF", unload=TRUE)
 
 #########################################################################################
 #########################################################################################
-###################               CORRELATIONS                  #########################
+###################                 W-D model                   #########################
 #########################################################################################
 
-
-################  TO CHANGE: NOT DISCHARGE WEIGHTING + LM!!!!!          #################
-################ ONLY DISCHARGE WEIGHTING; USE THIS AS PARAMETER!!!     #################
 
 ###   preparations  - weighting per discharge - calibration/validation period ####
 
@@ -37,7 +34,7 @@ WT <- WT_m$WTemp
 #split time into calibration and validation intervall
 input <- data.frame(WT,AT_perc,GWT_perc)
 # calib <- input[1:161,]    # brauch ich nicht, weil ich ja kein modell "trainiere" 
-valid <- input[191:288,]  # sondern schon habe?
+valid <- input[191:288,]    # sondern schon habe?
 
 ######################      without lag   whole ts      #########################
 
@@ -78,13 +75,13 @@ valid_lag <- input_lag[191:288,]
 
 ####### preparations end ###########
 
-####### with lag whole ts ############ 
+##################with lag whole ts #################### 
 
 model_WT_lag <- input_lag$AT_perc+input_lag$GWT_perc_lag
 
 ggof(model_WT_lag,input_lag$WT,ylab=c("T, [°C]")) 
 
-###### wiht lag only validation period #############
+########## wiht lag only validation period #############
 
 
 model_WT_lag_va <- valid_lag$AT_perc+valid_lag$GWT_perc_lag
@@ -92,5 +89,40 @@ model_WT_lag_va <- valid_lag$AT_perc+valid_lag$GWT_perc_lag
 ggof(model_WT_lag_va,valid_lag$WT,ylab=c("T, [°C]")) 
 
 #### to do: schauen wie die residuen sich verhalten - wo liegen sie wie weichen sie ab, sommer, winter etc?
+
+
+################ model just with airtemperature and gw-temp without weighting ###########
+
+####### without lag whole ts###########
+uw_model <- AT_m$AirTemp/2+GWT_m$GWTemp/2
+ggof(uw_model,WT_m$WTemp,ylab=c("T, [°C]"))
+
+
+####### without lag validation period #######
+uw_model_va <- uw_model[191:288]
+ggof(uw_model_va,valid$WT,ylab=c("T, [°C]"))
+
+
+####### with lag whole ts###########
+uw_model_lag <- AT_m$AirTemp/2+GWT_m_lag$GWTemp/2
+ggof(uw_model_lag,WT_m$WTemp,ylab=c("T, [°C]"))
+
+
+####### without lag validation period #######
+uw_model_lag_va <- uw_model_lag[191:288]
+ggof(uw_model_lag_va,valid$WT,ylab=c("T, [°C]"))
+
+
+
+#### zum vergleich (in section 4.3.5.2) !!!!! NUR VALIDATON PERIOD NEHMEN!!!
+atdw <- (AT_m$AirTemp*Q_m_perc$fast_p)[191:288] #discharge weighted
+atuw <- (AT_m$AirTemp/2)[191:288] # unweighted 
+
+gwtdw <- (GWT_m_lag$GWTemp*Q_m_perc$slow_p)[191:288] # discharge weighted
+gwtuw <- (GWT_m_lag$GWTemp/2)[191:288] # nuweighted
+
+
+plot(model_WT_lag_va, type="l")
+lines(uw_model_lag_va, col="red")
 
 
