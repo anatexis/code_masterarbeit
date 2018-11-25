@@ -77,7 +77,7 @@ print(model)
 summary(model)
 mean(model$residuals)
 acf(model$residuals)
-plot(model)
+#plot(model)
 # intepretation of plot (sources: https://stats.stackexchange.com/a/65864)
 # 1st plot( residuals vs fitted): there is some nonlinearity!! (change model!)  (source: https://stats.stackexchange.com/a/76228)
 
