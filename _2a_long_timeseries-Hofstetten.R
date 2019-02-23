@@ -7,24 +7,27 @@ if( .Platform$OS.type == "windows" )
   path <- "C:/Users/Russ/Desktop/master/daten/Stationsdaten/"
 setwd(path)
 
-file <- "Q207852-TM-Hofstetten(Bad).dat"
+fileq <- "Q207852-TM-Hofstetten(Bad).dat"
 
-rff <- read_table(file, col_names = F, skip = 27, cols(
+rff <- read_table(fileq, col_names = F, skip = 27, cols(
                 X1 = col_date(format = "%d.%m.%Y"),
                 X2 = col_time(format = ""),
                 X3 = col_double()
 ))
 
-# #subsetting
-# rff <- rff[as_date(rff$X1)>as_date("2008-01-01"), ]
-# mean(na.omit(rff$X3))
+#subsetting
+rff <- rff[as_date(rff$X1)<as_date("2016-01-01"), ]
+rff <- rff[as_date(rff$X1)>as_date("1990-12-31"), ]
+mean(na.omit(rff$X3))
 # plot
 
 plot_rff<- ggplot(rff,aes(x =X1 , y = X3)) + 
         xlab("time [d]") + ylab("Runoff [m³/d]") +
         ylim(0,60)+
         ggtitle("Station Hofstetten")+
-        geom_line(stat="identity") 
+        geom_line(stat="identity", size=0.05) +
+        geom_hline(yintercept=mean(rff$X3), linetype="dashed", color="red",size=1.2) +
+        geom_hline(yintercept=6.47,  color="blue",size=1)
 plot_rff
 
 
@@ -33,24 +36,24 @@ path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten"
 if( .Platform$OS.type == "windows" )
   path <- "C:/Users/Russ/Desktop/master/daten/Stationsdaten/"
 setwd(path)
-file <- "LT107300.dat"
+fileat <- "LT107300.dat"
 
-at <- read_table(file, col_names = F, skip = 20, cols(
+at <- read_table(fileat, col_names = F, skip = 20, cols(
         X1 = col_date(format = "%d.%m.%Y"),
         X2 = col_time(format = ""),
         X3 = col_double()
 ))
 
-# 
-# #subsetting
-# at <- at[as_date(at$X1)>as_date("2008-01-01"), ]
-# plot
+
+#subsetting
+at <- at[as_date(at$X1)<as_date("2016-01-01"), ]
+
 
 plot_at<- ggplot(at,aes(x =X1 , y = X3)) + 
         xlab("time [d]") + ylab("air temperature") +
         expand_limits(y=c(-10,20))+
         ggtitle("Station 107300")+
-        geom_point(stat="identity") 
+        geom_point(stat="identity", size=0.2) 
 plot_at
 
 
@@ -60,15 +63,17 @@ path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/Daten/Stationsdaten"
 if( .Platform$OS.type == "windows" )
   path <- "C:/Users/Russ/Desktop/master/daten/Stationsdaten/"
 setwd(path)
-file <- "WT-Tagesmitte-Hofstetten(Bad).dat"
+filewt <- "WT-Tagesmitte-Hofstetten(Bad).dat"
 
-wt <- read_table(file, col_names = F, skip = 31, cols(
+wt <- read_table(filewt, col_names = F, skip = 31, cols(
         X1 = col_date(format = "%d.%m.%Y"),
         X2 = col_time(format = ""),
         X3 = col_double()
 ))
 
- 
+wt <- wt[as_date(wt$X1)<as_date("2016-01-01"), ]
+wt <- wt[as_date(wt$X1)>as_date("1990-12-31"), ]
+
 # #subsetting
 # wt <- wt[as_date(wt$X1)>as_date("2008-01-01"), ]
 # plot
@@ -76,7 +81,7 @@ wt <- read_table(file, col_names = F, skip = 31, cols(
 plot_wt<- ggplot(wt,aes(x =X1 , y = X3)) + 
         xlab("time [d]") + ylab("water temperature") +
         ggtitle("Station Hofstetten")+
-        geom_point(stat="identity") 
+        geom_point(stat="identity", size=0.2)  
 plot_wt # 864 missing observations
 
 
