@@ -90,7 +90,7 @@ for (i in seq(6)) {
 ######################## PLOT FOR THESIS
 #subsetting
 pst1 <- pst1[as_date(pst1$X1) > as_date("1990-12-31"), ]
-pst1 <- pst1[as_date(pst1$X1) < as_date("2015-01-01"), ]
+pst1 <- pst1[as_date(pst1$X1) < as_date("2016-01-01"), ]
 
 ploti <- ggplot(data = pst1, aes(x = X1, y = X2) )+
   xlab("time") +
