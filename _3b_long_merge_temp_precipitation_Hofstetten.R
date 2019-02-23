@@ -44,7 +44,9 @@ P_T <- add_column(pst_T1,pst_P1$X2)
 
 # rounding to one digit
 P_T$X2 <- round(P_T$X2,1)
-P_T$`pst_P1$X2` <- round(P_T$`pst_P1$X2`,1)
+P_T$`pst_P1$X2` <- round(P_T$`pst_P1$X2`,1) 
+
+### P_T used for THESIS see plot at bottom
 
 
 
@@ -62,17 +64,36 @@ if( .Platform$OS.type == "windows" )
   path <- "C:/Users/Russ/Desktop/master/daten/output_R/"
 setwd(path)
 
-# complete data
-write.table(P_T,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                             "_tnse", ".txt", sep = "") ,sep=",",
-            row.names=FALSE, col.names = c("Datum", "t", "NSeff"),
-#uncomm if on linux          eol = "\r\n", 
-                                          quote = F)
+# # complete data
+# write.table(P_T,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                              "_tnse", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE, col.names = c("Datum", "t", "NSeff"),
+# #uncomm if on linux          eol = "\r\n", 
+#                                           quote = F)
 
-# removed 29.02
-write.table(P_T2902rm,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                                   "_tnse2902rm", ".txt", sep = ""), sep=",",
-            row.names=FALSE, col.names = c("Datum", "t", "NSeff"),
-#uncomm if on linux          eol = "\r\n", 
-                                           quote = F)
-# file wil be moved to data/input and name will be changend (tnse2902rm_Hofstn) 
+# # removed 29.02
+# write.table(P_T2902rm,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                                    "_tnse2902rm", ".txt", sep = ""), sep=",",
+#             row.names=FALSE, col.names = c("Datum", "t", "NSeff"),
+# #uncomm if on linux          eol = "\r\n", 
+#                                            quote = F)
+# # file wil be moved to data/input and name will be changend (tnse2902rm_Hofstn) 
+
+
+############ PLOT F THESIS
+
+#precipitation
+plot_p<- ggplot(P_T,aes(x = X1 , y = `pst_P1$X2`)) + 
+  xlab("time") + ylab("P[mm]") +
+  ggtitle("Areal Precipitation")+
+  geom_bar(stat="identity",lwd=0.1, color="black") # without color=black werden einige werte nicht angezeig
+plot_p
+
+#air temp
+plot_t<- ggplot(P_T,aes(x=X1, y=X2)) + 
+  xlab("time") + ylab("Temperature [°C]") +
+  ggtitle("Air Temperature")+
+  geom_point(size=0.1)
+
+plot_t
+
