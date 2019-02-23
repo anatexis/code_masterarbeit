@@ -87,3 +87,16 @@ for (i in seq(6)) {
 #   print(tail(plot_i))
   }
 
+######################## PLOT FOR THESIS
+#subsetting
+pst1 <- pst1[as_date(pst1$X1) > as_date("1990-12-31"), ]
+pst1 <- pst1[as_date(pst1$X1) < as_date("2015-01-01"), ]
+
+ploti <- ggplot(data = pst1, aes(x = X1, y = X2) )+
+  xlab("time") +
+  ylab("Temperature [°C]") +
+  ggtitle("Monthly groundwater temperature - station Ochsenburg, Br 253")+
+  geom_line()
+ploti
+
+  
