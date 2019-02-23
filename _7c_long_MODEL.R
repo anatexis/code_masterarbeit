@@ -125,4 +125,8 @@ gwtuw <- (GWT_m_lag$GWTemp/2)[191:288] # nuweighted
 plot(model_WT_lag_va, type="l")
 lines(uw_model_lag_va, col="red")
 
-
+# boxplots
+boxplot(atdw,atuw,names = c("discharge-weighted","unweighted"),
+        ylab="[°C]", main ="Air temperature comparison", ylim=c(-3,18))
+boxplot(gwtdw,gwtuw,names = c("discharge-weighted","unweighted"),
+        ylab="[°C]", main ="Groundwater temperature comparison",ylim=c(-3,18))
