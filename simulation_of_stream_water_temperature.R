@@ -97,7 +97,7 @@ simplot_at_wt_Qw <- simplot +
 
 simplot_at_wt_Qw ### way worse than with sim2 (which is just half groundwater temperature and half airtemperature...)
 
-### mohseni
+### mohseni (first execude code below, T_s is defined at the bottom...)
 simplot_mohseni <- simplot +
   geom_line(data=sim2, aes(x=seq_along(sim2$stemp),
                            y=sim2$stemp),colour = "grey")+
