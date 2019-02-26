@@ -32,7 +32,7 @@ tail(discharge)
 discharge <- discharge %>% mutate(qsim=linout + cascout) %>% 
   select(., TTMMYYYY,Qobs,qsim,linout,cascout)
 
-### calculate monthly discharge
+### calculate monthly discharge 
 monthly_dis <- discharge %>%
 #  mutate(year_month = strftime(TTMMYYYY, format = "%Y-%W", tz = "CET")) %>% 
   group_by(year = year(TTMMYYYY), month = month(TTMMYYYY)) %>%
@@ -40,7 +40,7 @@ monthly_dis <- discharge %>%
       Qobs = mean(Qobs),
       qsim = mean(qsim),
       linout = mean(linout),
-      cascout = mean(cascout))
+      cascout = mean(cascout)) # mean anstatt sum genommen....
 
 
 library(hydroGOF)
