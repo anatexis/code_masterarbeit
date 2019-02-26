@@ -144,7 +144,8 @@ boxplot(gwtdw,gwtuw,names = c("discharge-weighted","unweighted"),
 
 
 
-##################TEST: optimize parameters using optim() #########################
+##################optimize parameters using optim() #########################
+#quelle: https://magesblog.com/post/2013-03-12-how-to-use-optim-in-r/
 mu <- 0 # wie mohseni
 a <- 20 # max stream temp
 dat <- data.frame(wt=valid$WT, at=AT_m$AirTemp[191:288])
@@ -156,7 +157,7 @@ min.RSS <- function(data, par) {
 
 (result <- optim(par = c(0.1, 11), fn = min.RSS, data = dat))
 
-### mohseni geschätzt (von loich noch)
+
 mu <- 0
 a <- 20
 b <- 9.6 #par2
@@ -165,18 +166,20 @@ mohs <- (mu+(a-mu)/(1+exp(gam*(b-AT_m$AirTemp))))
 WT_mohs <- add_column(AT_m, mohs, input$WT)
 WT_mohs <- plyr::rename(WT_mohs, c(month="month",
                                                AirTemp="AirTemp",
-                                               mohs="mohs_t",
-                                   `input$WT`="obs_streamw_t"))
+                                               mohs="sim_wt",
+                                   `input$WT`="obs_wt"))
+WT_mohs <- WT_mohs[191:288,] #only get validation period
+
 ## plotten
 simplot_test <- ggplot() +
-  geom_line(data=WT_mohs, aes(x=seq_along(WT_mohs$mohs_t),
-                               y=WT_mohs$obs_streamw_t), colour = "black", show.legend = T) +
+  geom_line(data=WT_mohs, aes(x=seq_along(WT_mohs$sim_wt),
+                               y=WT_mohs$obs_wt), colour = "black", show.legend = T) +
   xlab("month") +
   ylab("stream water temperature [C°]")
 simplot_test
-simplot_test+ geom_line(data=WT_mohs, aes(x=seq_along(WT_mohs$mohs_t),
-                                      y=WT_mohs$mohs_t),
+simplot_test+ geom_line(data=WT_mohs, aes(x=seq_along(WT_mohs$sim_wt),
+                                      y=WT_mohs$sim_wt),
                         colour = "blue")
 
-ggof(WT_mohs$mohs_t,WT_mohs$obs_streamw_t,ylab=c("T, [°C]"))
+ggof(WT_mohs$sim_wt,WT_mohs$obs_wt,ylab=c("T, [°C]"))
 
