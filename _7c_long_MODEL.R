@@ -33,7 +33,7 @@ WT <- WT_m$WTemp
 
 #split time into calibration and validation intervall
 input <- data.frame(WT,AT_perc,GWT_perc)
-# calib <- input[1:161,]    # brauch ich nicht, weil ich ja kein modell "trainiere" 
+calib <- input[1:161,]    # brauch ich nicht, weil ich ja kein modell "trainiere" ?
 valid <- input[191:288,]    # sondern schon habe?
 
 ######################      without lag   whole ts      #########################
@@ -130,3 +130,53 @@ boxplot(atdw,atuw,names = c("discharge-weighted","unweighted"),
         ylab="[°C]", main ="Air temperature comparison", ylim=c(-3,18))
 boxplot(gwtdw,gwtuw,names = c("discharge-weighted","unweighted"),
         ylab="[°C]", main ="Groundwater temperature comparison",ylim=c(-3,18))
+
+
+
+
+
+
+############################ MOHSENI##########
+# aufpassen mit daten AT_m sind die originalen Temperaturdaten, 
+# in "input", "calib", "valid" sind die temperaturen schon mit discharge gewichtet!!!
+
+# AT_m_c und AT_m_v sind die alten hydrologischen calib und valid perioden!!!
+
+
+
+##################TEST: optimize parameters using optim() #########################
+mu <- 0 # wie mohseni
+a <- 20 # max stream temp
+dat <- data.frame(wt=valid$WT, at=AT_m$AirTemp[191:288])
+dat <- dat[complete.cases(dat),]
+
+min.RSS <- function(data, par) {
+  with(data, sum((wt-mu-((a-mu)/(1+exp(par[1]*(par[2]-(at))))))^2))
+}
+
+(result <- optim(par = c(0.1, 11), fn = min.RSS, data = dat))
+
+### mohseni geschätzt (von loich noch)
+mu <- 0
+a <- 20
+b <- 9.6 #par2
+gam <- 0.141 #par1
+mohs <- (mu+(a-mu)/(1+exp(gam*(b-AT_m$AirTemp))))
+WT_mohs <- add_column(AT_m, mohs, input$WT)
+WT_mohs <- plyr::rename(WT_mohs, c(month="month",
+                                               AirTemp="AirTemp",
+                                               mohs="mohs_t",
+                                   `input$WT`="obs_streamw_t"))
+## plotten
+simplot_test <- ggplot() +
+  geom_line(data=WT_mohs, aes(x=seq_along(WT_mohs$mohs_t),
+                               y=WT_mohs$obs_streamw_t), colour = "black", show.legend = T) +
+  xlab("month") +
+  ylab("stream water temperature [C°]")
+simplot_test
+simplot_test+ geom_line(data=WT_mohs, aes(x=seq_along(WT_mohs$mohs_t),
+                                      y=WT_mohs$mohs_t),
+                        colour = "blue")
+
+ggof(WT_mohs$mohs_t,WT_mohs$obs_streamw_t,ylab=c("T, [°C]"))
+
