@@ -39,9 +39,10 @@ AT <- AT_m$AirTemp
 GWT <- GWT_m$GWTemp
 
 ccWT_AT <- ccf(WT,AT,lag.max = 10, type="correlation", na.action=na.pass)
-ccWT_AT
+plot(ccWT_AT, ylab = "ccf")
 
 ccWT_GWT <- ccf(GWT,WT,lag.max = 10, na.action = na.pass)
+plot(ccWT_GWT, ylab = "ccf")
 ccWT_GWT
 
 Find_Abs_Max_CCF<- function(a,b) # source https://stackoverflow.com/a/20133091

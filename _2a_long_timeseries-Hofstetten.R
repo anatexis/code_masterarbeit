@@ -22,7 +22,7 @@ mean(na.omit(rff$X3))
 # plot
 
 plot_rff<- ggplot(rff,aes(x =X1 , y = X3)) + 
-        xlab("time [d]") + ylab("Runoff [m³/d]") +
+        xlab("time [d]") + ylab("Runoff [m³/s]") +
         ylim(0,60)+
         ggtitle("Station Hofstetten")+
         geom_line(stat="identity", size=0.05) +

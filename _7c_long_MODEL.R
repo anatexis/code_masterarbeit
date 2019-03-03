@@ -174,7 +174,7 @@ WT_mohs <- WT_mohs[191:288,] #only get validation period
 simplot_test <- ggplot() +
   geom_line(data=WT_mohs, aes(x=seq_along(WT_mohs$sim_wt),
                                y=WT_mohs$obs_wt), colour = "black", show.legend = T) +
-  xlab("month") +
+  xlab("Time (Months)") +
   ylab("stream water temperature [C°]")
 simplot_test
 simplot_test+ geom_line(data=WT_mohs, aes(x=seq_along(WT_mohs$sim_wt),
