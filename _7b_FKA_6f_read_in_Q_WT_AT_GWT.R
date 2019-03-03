@@ -36,9 +36,9 @@ discharge_c <- discharge_c %>% mutate(qsim=linout + cascout) %>%
 Q_m_c <- discharge_c %>% select(., date=TTMMYYYY, qsim, slow, fast)%>%
   group_by(year = year(date),
            month = month(date))%>% ### calculate monthly mean temp
-  summarise(qsim = mean(qsim),
-            slow = mean(slow),
-            fast = mean(fast))
+  summarise(qsim = sum(qsim),
+            slow = sum(slow),
+            fast = sum(fast))
 
 
 ############ VALIDATION PERIOD ################################
@@ -65,9 +65,10 @@ discharge_v <- discharge_v %>% mutate(qsim=linout + cascout) %>%
 Q_m_v <- discharge_v %>% select(., date=TTMMYYYY, qsim, slow, fast)%>%
   group_by(year = year(date),
            month = month(date))%>% ### calculate monthly mean temp
-  summarise(qsim = mean(qsim),
-            slow = mean(slow),
-            fast = mean(fast))
+  summarise(qsim = sum(qsim),
+            slow = sum(slow),
+            fast = sum(fast))
+
 
 
 ################### merge the two datasets ##########
