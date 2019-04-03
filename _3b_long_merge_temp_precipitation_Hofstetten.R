@@ -84,16 +84,16 @@ setwd(path)
 
 #precipitation
 plot_p<- ggplot(P_T,aes(x = X1 , y = `pst_P1$X2`)) + 
-  xlab("time") + ylab("P[mm]") +
+  xlab("Time [d]") + ylab("Precipitation [mm]") +
   ggtitle("Areal Precipitation")+
   geom_bar(stat="identity",lwd=0.1, color="black") # without color=black werden einige werte nicht angezeig
 plot_p
 
 #air temp
-plot_t<- ggplot(P_T,aes(x=X1, y=X2)) + 
-  xlab("time") + ylab("Temperature [°C]") +
+plot_t<- ggplot(pst_T1,aes(x=X1, y=X2)) + 
+  xlab("Time [d]") + ylab("Temperature [°C]") +
   ggtitle("Air Temperature")+
-  geom_point(size=0.1)
+  geom_line(size=0.01)
 
 plot_t
 
