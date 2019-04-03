@@ -38,6 +38,8 @@ sums
 perct
 (diff_eta <- sums$NS-sums$qsim_eta) # - sim too big ; 
 (diff_q <- sums$Qobs-sums$qsim) # - sim too big
+(diff_q <- sums$Qobs-sums$qsim)/13 # per year
+
 
 (diff_diffs <- abs(diff_eta)-abs(diff_q)) # when + : more eta ; when -: more discharge
 
