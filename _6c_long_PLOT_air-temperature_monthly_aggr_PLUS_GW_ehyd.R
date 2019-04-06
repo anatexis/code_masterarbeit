@@ -258,3 +258,30 @@ WT_p+
   geom_line(data = gwst1_1991_2003, aes(x=X1, y=X2, color="Groundwatertemp")) +
   geom_line(data=ts_month_t, aes(x = Index, y=Temp, color="Airtemp"))
 
+######################################################################################
+######################        PLOT FOR THESIS COMPARISON AT and GWT      #############
+######################################################################################
+
+#gwt
+gwst1_1991_2003
+GW_3y_1 <- gwst1_1991_2003[as_date(gwst1_1991_2003$X1) < as_date("2002-06-01"), ]
+GW_3y <- GW_3y_1[as_date(GW_3y_1$X1) > as_date("1998-12-31"), ]
+
+#gwt
+ts_month_t
+
+starting<-"19990101"
+ending<-"20020601"
+
+AT_3y <- ts_month_t[paste(starting,ending,sep="/")] 
+# quelle: https://stackoverflow.com/a/43971603
+
+
+AT_GWT_3y_p <- ggplot()+
+  geom_line(data=AT_3y, aes(x = Index, y=Temp, color = "AT"))+ #quelle: https://stackoverflow.com/a/43345938
+  scale_x_date(date_labels="%y",date_breaks  ="1 year") + #https://stackoverflow.com/a/41856325
+  geom_line(data = GW_3y, aes(x=X1, y=X2, color="GWT")) +
+  xlab("Time [Months]") + ylab("Temperature [°C]") +
+  ggtitle("Temperature Curve")
+AT_GWT_3y_p
+
