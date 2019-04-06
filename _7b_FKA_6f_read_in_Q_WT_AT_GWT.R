@@ -268,5 +268,41 @@ GWT_m_lag <- GWT_m_lag[1:288,] # to remove the last three NAs
 # end of preparation ########################
 
 
+######################################################################################
+######################        DATA FOR THESIS COMPARISON AT and GWT      #############
+######################################################################################
+
+#preparations
+GWT_m1 <- GWT_m %>% # prepare for joining (WT,AT, Q already have the right format)
+  group_by(year = year(date),
+           month = month(date)) %>% 
+  select(.,year, month, GWTemp)
+
+GWT_m_lag1 <- GWT_m_lag %>% # prepare for joining (WT,AT, Q already have the right format)
+  group_by(year = year(date),
+           month = month(date)) %>% 
+  select(.,year, month, GWTemp_lag=GWTemp)
+
+Q_m_perc <- Q_m %>% mutate(slow_p=slow/qsim,
+                           fast_p=fast/qsim) %>% select(year,month,slow_p,fast_p)
+
+joined <- inner_join(WT_m,AT_m)
+joined1 <- inner_join(joined,GWT_m1)
+joined2 <- inner_join(joined1,GWT_m_lag1)
+joined3 <- inner_join(joined2,Q_m_perc)
+joined3r <- round(joined3,3)
+
+#write results
+path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/"
+if( .Platform$OS.type == "windows" )
+  path <- "C:/Users/Russ/Desktop/mt-master/used_pics//"
+setwd(path)
 
 
+# commented out when written
+# complete data
+write.table(joined3r,file = paste(format(Sys.time(), "%Y-%m-%d"),
+                             "ALL_DATA", ".txt", sep = "") ,sep=",",
+            row.names=FALSE,col.names = T,
+            #add if on linux:           eol = "\r\n",
+            quote = F)
