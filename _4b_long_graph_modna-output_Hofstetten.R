@@ -78,7 +78,7 @@ Q_end
 # setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_daily/")
 # file.rename("inputmodna.txt",paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),
 #                                    "_inputmodna", ".txt", sep = ""))
-# 
+#
 
 #sources:
 
