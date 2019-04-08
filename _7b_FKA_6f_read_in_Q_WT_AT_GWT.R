@@ -269,7 +269,7 @@ GWT_m_lag <- GWT_m_lag[1:288,] # to remove the last three NAs
 
 
 ######################################################################################
-######################        DATA FOR THESIS COMPARISON AT and GWT      #############
+######################        DATA FOR THESIS DATE, WT, AT, GWT, Q       #############
 ######################################################################################
 
 #preparations
@@ -292,17 +292,75 @@ joined2 <- inner_join(joined1,GWT_m_lag1)
 joined3 <- inner_join(joined2,Q_m_perc)
 joined3r <- round(joined3,3)
 
-#write results
-path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/"
-if( .Platform$OS.type == "windows" )
-  path <- "C:/Users/Russ/Desktop/mt-master/used_pics//"
-setwd(path)
+# #write results
+# path <- "/home/christoph/Dokumente/BOKU/Masterarbeit/"
+# if( .Platform$OS.type == "windows" )
+#   path <- "C:/Users/Russ/Desktop/mt-master/used_pics//"
+# setwd(path)
+# 
+# 
+# # commented out when written
+# # complete data
+# write.table(joined3r,file = paste(format(Sys.time(), "%Y-%m-%d"),
+#                              "ALL_DATA", ".txt", sep = "") ,sep=",",
+#             row.names=FALSE,col.names = T,
+#             #add if on linux:           eol = "\r\n",
+#             quote = F)
 
 
-# commented out when written
-# complete data
-write.table(joined3r,file = paste(format(Sys.time(), "%Y-%m-%d"),
-                             "ALL_DATA", ".txt", sep = "") ,sep=",",
-            row.names=FALSE,col.names = T,
-            #add if on linux:           eol = "\r\n",
-            quote = F)
+########################################
+###### Check model
+######################################
+data_c <- joined3r[1:161,]
+data_v <- joined3r[191:288,] #statistical validation period!!(=! to hydrol. val. period)
+
+obs <- data_v$WTemp
+
+AT_weighted <- data_v$AirTemp*data_v$fast_p
+GWT_weighted <- data_v$GWTemp*data_v$slow_p
+GWT_weighted_lag <- data_v$GWTemp_lag*data_v$slow_p
+
+m_weighted <- AT_weighted+GWT_weighted
+m_weighted_lag <- AT_weighted+GWT_weighted_lag
+
+
+AT_50w <- data_v$AirTemp*0.5
+GWT_50w <- data_v$GWTemp*0.5
+GWT_50w_lag <- data_v$GWTemp_lag*0.5
+
+m_50w <- AT_50w+GWT_50w
+m_50w_lag <- AT_50w+GWT_50w_lag
+
+###### plots
+plot(obs,type="l")
+lines(m_weighted,col="red")
+plot(obs-m_weighted)
+
+plot(obs,type="l")
+lines(m_weighted_lag,col="red")
+plot(obs-m_weighted_lag)
+
+plot(obs,type="l")
+lines(m_50w,col="blue")
+plot(obs-m_50w)
+
+plot(obs,type="l")
+lines(m_50w_lag,col="blue")
+plot(obs-m_50w_lag)
+
+######## mit hydroGOF
+require(hydroGOF)
+
+ggof(m_weighted,obs,ylab=c("T, [°C]"))
+ggof(m_weighted_lag,obs,ylab=c("T, [°C]"))
+ggof(m_50w,obs,ylab=c("T, [°C]"))
+ggof(m_50w_lag,obs,ylab=c("T, [°C]"))
+
+
+plot(obs[56:100])
+points(m_weighted[56:100],col="red")
+points(m_weighted_lag[56:100],col="blue")
+
+plot(obs[56:100])
+points(m_50w[56:100],col="red")
+points(m_50w_lag[56:100],col="blue")
