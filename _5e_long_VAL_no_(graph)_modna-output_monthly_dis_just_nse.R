@@ -37,13 +37,30 @@ monthly_dis <- discharge %>%
 #  mutate(year_month = strftime(TTMMYYYY, format = "%Y-%W", tz = "CET")) %>% 
   group_by(year = year(TTMMYYYY), month = month(TTMMYYYY)) %>%
   summarise(
-      Qobs = mean(Qobs),
-      qsim = mean(qsim),
-      linout = mean(linout),
-      cascout = mean(cascout)) # mean anstatt sum genommen....
+      Qobs = sum(Qobs),
+      qsim = sum(qsim),
+      linout = sum(linout),
+      cascout = sum(cascout)) # mean anstatt sum genommen....
 
 
 library(hydroGOF)
 (nse <- NSE(monthly_dis$qsim,monthly_dis$Qobs))
 (kge <- KGE(monthly_dis$qsim,monthly_dis$Qobs))
+
+#plot
+
+Q_monthly_dis34 <- monthly_dis[3:4] %>% # I have tu subset the tibble like this, with select(.,fast,slow) it doesnt work
+  rowid_to_column(.,"rowid") %>% 
+  gather(.,Q_type,Q,-rowid)
+
+(p <- ggplot(Q_monthly_dis34, aes(rowid, Q, color = Q_type)) +
+    xlab("Time [Months]") + ylab("Runoff [mm]") +
+    ggtitle("Runoff comparison (Validation period)")+
+    geom_line( stat = "identity")+
+    
+    annotate("text", x=115, y=230,label="nse= ")+
+    annotate("text", x=128, y=230,label=as.character(round(nse,3)))+
+    annotate("text", x=115, y=218,label="kge= ")+
+    annotate("text", x=128, y=218,label=as.character(round(kge,3)))
+)
 
