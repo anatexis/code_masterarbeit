@@ -32,15 +32,15 @@ tail(discharge)
 discharge <- discharge %>% mutate(qsim=linout + cascout) %>% 
   select(., TTMMYYYY,Qobs,qsim,linout,cascout)
 
-### calculate weekly discharge
-weekly_dis <- discharge %>%
-#  mutate(year_week = strftime(TTMMYYYY, format = "%Y-%W", tz = "CET")) %>% 
-  group_by(year = year(TTMMYYYY), week = week(TTMMYYYY)) %>%
+### calculate monthly discharge
+monthly_dis <- discharge %>%
+#  mutate(year_month = strftime(TTMMYYYY, format = "%Y-%W", tz = "CET")) %>% 
+  group_by(year = year(TTMMYYYY), month = month(TTMMYYYY)) %>%
   summarise(
-      Qobs = mean(Qobs),
-      qsim = mean(qsim),
-      linout = mean(linout),
-      cascout = mean(cascout))
+      Qobs = sum(Qobs),
+      qsim = sum(qsim),
+      linout = sum(linout),
+      cascout = sum(cascout))
 
 # 
 #       mutate(year_week = year+week)
@@ -51,32 +51,44 @@ weekly_dis <- discharge %>%
 #  
 
 library(hydroGOF)
-(nse <- NSE(weekly_dis$qsim,weekly_dis$Qobs))
-(kge <- KGE(weekly_dis$qsim,weekly_dis$Qobs))
+(nse <- NSE(monthly_dis$qsim,monthly_dis$Qobs))
+(kge <- KGE(monthly_dis$qsim,monthly_dis$Qobs))
 
 
-Q_weekly <- ggplot(data = weekly_dis)+
-  # geom_line( aes(x=week, y=cascout, color = "casc"))+
-  # geom_line( aes(x=week, y=linout, color = "lin"))+
-  geom_line( aes(x=year, y=Qobs, color = "Qobs"))+
-  # geom_line( aes(x=year, y=qsim, color = "Qsim"))+
-  xlab("Date")+
-  ylab("Discharge [mm]")+
-  # annotate("text", x=as.Date(10600), y=30,label="nse= ")+
-  # annotate("text", x=as.Date(11000), y=30,label=as.character(round(nse,3)))+
-  # annotate("text", x=as.Date(10600), y=28,label="kge= ")+
-  # annotate("text", x=as.Date(11000), y=28,label=as.character(round(kge,3)))+
-  scale_color_manual(values=c("Qobs"="#00BFC4", "Qsim"="#F8766D",
-                              "lin"="#7CAE00", "casc"="#C77CFF"))
-
-Q_weekly
-
-
+# Q_monthly <- ggplot(data = monthly_dis)+
+#   # geom_line( aes(x=month, y=cascout, color = "casc"))+
+#   # geom_line( aes(x=month, y=linout, color = "lin"))+
+#   geom_line( aes(x=year, y=Qobs, color = "Qobs"))+
+#   # geom_line( aes(x=year, y=qsim, color = "Qsim"))+
+#   xlab("Date")+
+#   ylab("Discharge [mm]")+
+#   # annotate("text", x=as.Date(10600), y=30,label="nse= ")+
+#   # annotate("text", x=as.Date(11000), y=30,label=as.character(round(nse,3)))+
+#   # annotate("text", x=as.Date(10600), y=28,label="kge= ")+
+#   # annotate("text", x=as.Date(11000), y=28,label=as.character(round(kge,3)))+
+#   scale_color_manual(values=c("Qobs"="#00BFC4", "Qsim"="#F8766D",
+#                               "lin"="#7CAE00", "casc"="#C77CFF"))
 # 
-# setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/plots_weekly/")
-# file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_weekly",".png",sep="")
+# Q_monthly
+
+Q_monthly_dis34 <- monthly_dis[3:4] %>% # I have tu subset the tibble like this, with select(.,fast,slow) it doesnt work
+  rowid_to_column(.,"rowid") %>% 
+  gather(.,Q_type,Q,-rowid)
+
+(p <- ggplot(Q_monthly_dis34, aes(rowid, Q, color = Q_type)) +
+    xlab("Time [Months]") + ylab("Runoff [mm]") +
+    geom_line( stat = "identity")+
+    
+    annotate("text", x=115, y=185,label="nse= ")+
+    annotate("text", x=130, y=185,label=as.character(round(nse,3)))+
+    annotate("text", x=115, y=170,label="kge= ")+
+    annotate("text", x=130, y=170,label=as.character(round(kge,3)))
+)
+
+# setwd("C:/Users/Russ/Desktop/mt-master/used_pics//")
+# file = paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_Q_MONTHLY_CALIB",".png",sep="")
 # ggsave(file, height = 4.64, width = 9.28, units = "in")
-# 
+
 # ##to trace my changes copy inputfile.txt to directories of plots
 # 
 # file <- list.files("C:/Users/Russ/Desktop/master/daten/input/",
