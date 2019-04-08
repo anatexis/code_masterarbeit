@@ -1,4 +1,12 @@
 
+# first run _7b_FKA_6f_read_in_Q_WT_AT_GWT.R
+
+setwd("C:/Users/Russ/Desktop/master/code_masterarbeit/")
+
+source("_7b_FKA_6f_read_in_Q_WT_AT_GWT.R") #anscheinend funktionierts trozt den warnungen!
+
+
+detach("package:hydroGOF", unload=TRUE)
 
 ######### fast&slow runoff! validation (for hydrological model!) period
 Q_m_v34 <- Q_m_v[4:5] %>% # I have tu subset the tibble like this, with select(.,fast,slow) it doesnt work
