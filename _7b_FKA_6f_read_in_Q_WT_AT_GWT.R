@@ -268,9 +268,9 @@ GWT_m_lag <- GWT_m_lag[1:288,] # to remove the last three NAs
 # end of preparation ########################
 
 
-######################################################################################
-######################        DATA FOR THESIS DATE, WT, AT, GWT, Q       #############
-######################################################################################
+##############################################################################################
+######################        DATA FOR THESIS: DATE, WT, AT, GWT, Q      #####################
+##############################################################################################
 
 #preparations
 GWT_m1 <- GWT_m %>% # prepare for joining (WT,AT, Q already have the right format)
@@ -364,3 +364,51 @@ points(m_weighted_lag[56:100],col="blue")
 plot(obs[56:100])
 points(m_50w[56:100],col="red")
 points(m_50w_lag[56:100],col="blue")
+
+
+########################## each year of w_model and uw_model to compare them ###
+################################################################################
+#                                                                             ##
+#                COMMENT OUT BEFOR SAVING!!!                                  ##
+#                                                                             ##
+################################################################################
+#(file is called from other files)
+library(hydroGOF)
+
+setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/yearly_comparison_w_uw_model/")
+
+
+# group_by was put in the loop
+for ( i in seq_len(2013-(1991)+2)){
+  
+  #prepare vectors for loop
+  y <- seq_len(2013-1991+2)
+  x <- c(0,12*y) 
+  dat <- joined3r[(x[i]+1):x[i+1],]
+  
+  temp_plot <- dat %>% 
+    mutate(w_m = dat$AirTemp*dat$fast_p + dat$GWTemp*dat$slow_p,
+           uw_m = dat$AirTemp*0.5 + dat$GWTemp*0.5)
+  
+  (nse_w <- NSE(temp_plot$w_m,temp_plot$WTemp))
+  (kge_w <- KGE(temp_plot$w_m,temp_plot$WTemp))
+  
+  (nse_uw <- NSE(temp_plot$uw_m,temp_plot$WTemp))
+  (kge_uw <- KGE(temp_plot$uw_m,temp_plot$WTemp))
+  
+  year <- 1990 + i
+  
+  Q <- ggplot(data= temp_plot)+
+    geom_line( aes(x=month, y=WTemp, color = "Obs"))+
+    geom_line( aes(x=month, y=w_m, color = "Weighted Model"))+
+    geom_line( aes(x=month, y=uw_m, color = "Unweighted Model"))+
+    ggtitle(paste("In the Year", year, "NSE is ",round(nse_w,2),"(w.m.) resp.", round(nse_uw,2), "(uw.m.)")) +
+    xlab("Date")+
+    ylab("Stream Temperature [°C]")+
+    scale_color_manual(values=c("Obs"="#00BFC4", "Weighted Model"="#F8766D",
+                                "Unweighted Model"="#7CAE00"))
+  print(Q) # zum anzeigen
+  ggsave(Q,filename=paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_",as.character(year),".png",sep=""))
+  
+  
+}
