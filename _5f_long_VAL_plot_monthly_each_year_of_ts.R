@@ -38,10 +38,10 @@ for ( i in seq_len(2013-(2004)+2)){
     select(., TTMMYYYY,Qobs,qsim,linout,cascout) %>%
     group_by(month = month(TTMMYYYY))%>% ### calculate monthly discharge
     summarise(
-      Qobs = mean(Qobs),
-      qsim = mean(qsim),
-      linout = mean(linout),
-      cascout = mean(cascout))
+      Qobs = sum(Qobs),
+      qsim = sum(qsim),
+      linout = sum(linout),
+      cascout = sum(cascout))
   
   nse <- NSE(discharge_plot_w$qsim,discharge_plot_w$Qobs)
   kge <- KGE(discharge_plot_w$qsim,discharge_plot_w$Qobs)
@@ -49,18 +49,18 @@ for ( i in seq_len(2013-(2004)+2)){
   year <- 2003 + i
   
   Q <- ggplot(data= discharge_plot_w)+
-    geom_line( aes(x=month, y=Qobs, color = "Qobs"))+
-    geom_line( aes(x=month, y=qsim, color = "Qsim"))+
-    geom_line( aes(x=month, y=linout, color = "lin"))+
-    geom_line( aes(x=month, y=cascout, color = "casc"))+
+    geom_line( aes(x=month, y=Qobs, color = ".Qobs"))+
+    geom_line( aes(x=month, y=qsim, color = ".Qsim"))+
+    geom_line( aes(x=month, y=linout, color = "slow"))+
+    geom_line( aes(x=month, y=cascout, color = "fast"))+
     ggtitle(paste("In the Year", year, "NSE is ",round(nse,2))) +
     xlab("Date")+
     ylab("Discharge [mm]")+
-    scale_color_manual(values=c("Qobs"="#00BFC4", "Qsim"="#F8766D",
-                                "lin"="#7CAE00", "casc"="grey"))
+    scale_color_manual(values=c(".Qobs"="#00BFC4", ".Qsim"="#F8766D",
+                                "slow"="#7CAE00", "fast"="grey"))
   print(Q) # zum anzeigen
-  ggsave(Q,filename=paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),file,"_",year,".png",sep=""),
-         height = 3.368173, width = 4.27, units = "in")
+  ggsave(Q,filename=paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),file,"_",year,".png",sep=""))#,
+         #height = 3.368173, width = 4.27, units = "in")
   
   
 }
