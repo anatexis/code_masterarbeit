@@ -38,7 +38,7 @@ monthly_dis <- discharge %>%
   group_by(year = year(TTMMYYYY), month = month(TTMMYYYY)) %>%
   summarise(
       Qobs = sum(Qobs),
-      qsim = sum(qsim),
+      .qsim = sum(qsim),
       linout = sum(linout),
       cascout = sum(cascout))
 
@@ -51,8 +51,8 @@ monthly_dis <- discharge %>%
 #  
 
 library(hydroGOF)
-(nse <- NSE(monthly_dis$qsim,monthly_dis$Qobs))
-(kge <- KGE(monthly_dis$qsim,monthly_dis$Qobs))
+(nse <- NSE(monthly_dis$.qsim,monthly_dis$Qobs))
+(kge <- KGE(monthly_dis$.qsim,monthly_dis$Qobs))
 
 
 # Q_monthly <- ggplot(data = monthly_dis)+
@@ -76,7 +76,7 @@ Q_monthly_dis34 <- monthly_dis[3:4] %>% # I have tu subset the tibble like this,
   gather(.,Q_type,Q,-rowid)
 
 (p <- ggplot(Q_monthly_dis34, aes(rowid, Q, color = Q_type)) +
-    xlab("Time [Months]") + ylab("Runoff [mm]") +
+    xlab("Time [Months]") + ylab("Discharge [mm]") +
     geom_line( stat = "identity")+
     
     annotate("text", x=115, y=185,label="nse= ")+
