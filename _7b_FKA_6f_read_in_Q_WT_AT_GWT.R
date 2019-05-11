@@ -168,7 +168,7 @@ WT_m <- WT %>%
 WT_m_NA <- WT_m[is.na(WT_m$WTemp),] # von 2014-6 bis 2016-10 (29 Datenpkt) fehlen und 2008-6
 #View(WT_m_NA)  
 
-plot(WT_m$WTemp, type="l")
+#plot(WT_m$WTemp, type="l")
 
 ################################################################################################
 ###################                  Einlesen der GWT-Daten            #########################
@@ -199,7 +199,7 @@ tail(gwtemp_m)
 GWT_m[is.na(GWT_m$GWTemp),]  # 2016 nicht mehr in subsetting bereich
 
 gwtemp_m[is.na(gwtemp_m$GWTemp),]
-plot(gwtemp_m,type="l")
+#plot(gwtemp_m,type="l")
 
 #######################
 GWT_m # from 1991 to 2014 without lag
@@ -311,6 +311,11 @@ joined3r <- round(joined3,3)
 ########################################
 ###### Check model
 ######################################
+################################################################################
+#                                                                             ##
+#                COMMENT OUT WRITE() BEFORE SAVING!!!                         ##
+# bc file is called from other files                                          ##
+################################################################################
 data_c <- joined3r[1:161,]
 data_v <- joined3r[191:288,] #statistical validation period!!(=! to hydrol. val. period)
 
@@ -332,50 +337,91 @@ m_50w <- AT_50w+GWT_50w
 m_50w_lag <- AT_50w+GWT_50w_lag
 
 ###### plots
-plot(obs,type="l")
-lines(m_weighted,col="red")
-plot(obs-m_weighted)
-
-plot(obs,type="l")
-lines(m_weighted_lag,col="red")
-plot(obs-m_weighted_lag)
-
-plot(obs,type="l")
-lines(m_50w,col="blue")
-plot(obs-m_50w)
-
-plot(obs,type="l")
-lines(m_50w_lag,col="blue")
-plot(obs-m_50w_lag)
+# plot(obs,type="l")
+# lines(m_weighted,col="red")
+# plot(obs-m_weighted)
+# 
+# plot(obs,type="l")
+# lines(m_weighted_lag,col="red")
+# plot(obs-m_weighted_lag)
+# 
+# plot(obs,type="l")
+# lines(m_50w,col="blue")
+# plot(obs-m_50w)
+# 
+# plot(obs,type="l")
+# lines(m_50w_lag,col="blue")
+# plot(obs-m_50w_lag)
 
 ######## mit hydroGOF
 require(hydroGOF)
 
-ggof(m_weighted,obs,ylab=c("T, [°C]"))
-ggof(m_weighted_lag,obs,ylab=c("T, [°C]"))
-ggof(m_50w,obs,ylab=c("T, [°C]"))
-ggof(m_50w_lag,obs,ylab=c("T, [°C]"))
-
-
-plot(obs[56:100])
-points(m_weighted[56:100],col="red")
-points(m_weighted_lag[56:100],col="blue")
-
-plot(obs[56:100])
-points(m_50w[56:100],col="red")
-points(m_50w_lag[56:100],col="blue")
+# ggof(m_weighted,obs,ylab=c("T, [°C]"))
+# ggof(m_weighted_lag,obs,ylab=c("T, [°C]"))
+# ggof(m_50w,obs,ylab=c("T, [°C]"))
+# ggof(m_50w_lag,obs,ylab=c("T, [°C]"))
+# 
+# 
+# plot(obs[56:100])
+# points(m_weighted[56:100],col="red")
+# points(m_weighted_lag[56:100],col="blue")
+# 
+# plot(obs[56:100])
+# points(m_50w[56:100],col="red")
+# points(m_50w_lag[56:100],col="blue")
 
 
 ########################## each year of w_model and uw_model to compare them ###
 ################################################################################
 #                                                                             ##
-#                COMMENT OUT BEFOR SAVING!!!                                  ##
-#                                                                             ##
+#                COMMENT OUT WRITE() BEFORE SAVING!!!                         ##
+# bc file is called from other files                                          ##
 ################################################################################
-#(file is called from other files)
+
 library(hydroGOF)
 
 setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/yearly_comparison_w_uw_model/")
+
+
+# group_by was put in the loop
+for ( i in seq_len(2013-(1991)+2)){
+
+  #prepare vectors for loop
+  y <- seq_len(2013-1991+2)
+  x <- c(0,12*y)
+  dat <- joined3r[(x[i]+1):x[i+1],]
+
+  temp_plot <- dat %>%
+    mutate(w_m = dat$AirTemp*dat$fast_p + dat$GWTemp*dat$slow_p,
+           uw_m = dat$AirTemp*0.5 + dat$GWTemp*0.5)
+
+  (nse_w <- NSE(temp_plot$w_m,temp_plot$WTemp))
+  (kge_w <- KGE(temp_plot$w_m,temp_plot$WTemp))
+
+  (nse_uw <- NSE(temp_plot$uw_m,temp_plot$WTemp))
+  (kge_uw <- KGE(temp_plot$uw_m,temp_plot$WTemp))
+
+  year <- 1990 + i
+
+  Q <- ggplot(data= temp_plot)+
+    geom_line( aes(x=month, y=WTemp, color = "Obs"))+
+    geom_line( aes(x=month, y=w_m, color = "wm"))+
+    geom_line( aes(x=month, y=uw_m, color = "uwm"))+
+    ggtitle(paste("In the Year", year, "NSE is ",round(nse_w,2),"(w.m.) resp.", round(nse_uw,2), "(uw.m.)")) +
+    xlab("Date")+
+    ylab("Stream Temperature [°C]")+
+    scale_color_manual(values=c("Obs"="#00BFC4", "wm"="#F8766D",
+                                "uwm"="#7CAE00"))
+  print(Q) # zum anzeigen
+#  ggsave(Q,filename=paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_",as.character(year),".png",sep=""))
+
+
+}
+
+
+################################ just at in comp to wt, gwt (for GWT*0.5 and AT*0.5 just put it into mutate)
+
+setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/yearly_comparison_w_uw_model_AT_GWT_seperate/")
 
 
 # group_by was put in the loop
@@ -387,28 +433,83 @@ for ( i in seq_len(2013-(1991)+2)){
   dat <- joined3r[(x[i]+1):x[i+1],]
   
   temp_plot <- dat %>% 
-    mutate(w_m = dat$AirTemp*dat$fast_p + dat$GWTemp*dat$slow_p,
-           uw_m = dat$AirTemp*0.5 + dat$GWTemp*0.5)
+    mutate(AT05 = dat$AirTemp,
+           GWT05 = dat$GWTemp)
   
-  (nse_w <- NSE(temp_plot$w_m,temp_plot$WTemp))
-  (kge_w <- KGE(temp_plot$w_m,temp_plot$WTemp))
+  (nse_w <- NSE(temp_plot$AT05,temp_plot$WTemp))
+  (kge_w <- KGE(temp_plot$AT05,temp_plot$WTemp))
   
-  (nse_uw <- NSE(temp_plot$uw_m,temp_plot$WTemp))
-  (kge_uw <- KGE(temp_plot$uw_m,temp_plot$WTemp))
+  (nse_uw <- NSE(temp_plot$GWT05,temp_plot$WTemp))
+  (kge_uw <- KGE(temp_plot$GWT05,temp_plot$WTemp))
   
   year <- 1990 + i
   
   Q <- ggplot(data= temp_plot)+
     geom_line( aes(x=month, y=WTemp, color = "Obs"))+
-    geom_line( aes(x=month, y=w_m, color = "Weighted Model"))+
-    geom_line( aes(x=month, y=uw_m, color = "Unweighted Model"))+
-    ggtitle(paste("In the Year", year, "NSE is ",round(nse_w,2),"(w.m.) resp.", round(nse_uw,2), "(uw.m.)")) +
+    geom_line( aes(x=month, y=AT05, color = "AT"))+
+    geom_line( aes(x=month, y=GWT05, color = "GWT"))+
+    # ggtitle(paste("In the Year", year, "NSE is ",round(nse_w,2),"(AT) resp.",
+    #               round(nse_uw,2), "(GWT)")) +
     xlab("Date")+
     ylab("Stream Temperature [°C]")+
-    scale_color_manual(values=c("Obs"="#00BFC4", "Weighted Model"="#F8766D",
-                                "Unweighted Model"="#7CAE00"))
+    scale_color_manual(values=c("Obs"="#00BFC4", "AT"="#F8766D",
+                                "GWT"="#7CAE00"))
   print(Q) # zum anzeigen
-  ggsave(Q,filename=paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_",as.character(year),".png",sep=""))
+  # ggsave(Q,filename=paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_",as.character(year),
+  #                         ".png",sep=""))
+  
+  
+}
+
+
+################# mit optim herausfinden was beste aufteilung zw at und gwt ist
+
+#zuerst nse händisch nachbauen (stimmt nicht ganz mit NSE() überein wegen fehlender values)
+NSE(data_c$AirTemp*0.5+data_c$GWTemp*0.5,data_c$WTemp)
+
+dat <- data_c[complete.cases(data_c),]
+with(dat,1-sum((AirTemp*0.5+GWTemp*0.5 - WTemp)^2) / sum((WTemp - mean(WTemp))^2))
+
+
+min.RSS <- function(data, par) {
+  with(data,1-(1-sum((AirTemp*par[1]+GWTemp*par[2] - WTemp)^2) / sum((WTemp - mean(WTemp))^2)))
+}
+
+dat <- joined3r[complete.cases(joined3r),]
+(result <- optim(par = c(0.1, 11), fn = min.RSS, data = dat))
+
+setwd("C:/Users/Russ/Desktop/master/plotfiles_Hofstetten/yearly_comparison_w_uw_model_AT_GWT_optim/")
+
+
+# group_by was put in the loop
+for ( i in seq_len(2013-(1991)+2)){
+  
+  #prepare vectors for loop
+  y <- seq_len(2013-1991+2)
+  x <- c(0,12*y) 
+  dat <- joined3r[(x[i]+1):x[i+1],]
+  
+  temp_plot <- dat %>% 
+    mutate(AT = dat$AirTemp*0.677,
+           GWT = dat$GWTemp*0.343,
+           T_opt = AT+GWT)
+  
+  (nse_w <- NSE(temp_plot$T_opt,temp_plot$WTemp))
+  (kge_w <- KGE(temp_plot$T_opt,temp_plot$WTemp))
+
+  
+  year <- 1990 + i
+  
+  Q <- ggplot(data= temp_plot)+
+    geom_line( aes(x=month, y=WTemp, color = "Obs"))+
+    geom_line( aes(x=month, y=T_opt, color = "T_opt"))+
+    ggtitle(paste("In the Year", year, "NSE is ",round(nse_w,2),"(T_opt)")) +
+    xlab("Date")+
+    ylab("Stream Temperature [°C]")+
+    scale_color_manual(values=c("Obs"="#00BFC4", "T_opt"="#F8766D"))
+  print(Q) # zum anzeigen
+  # ggsave(Q,filename=paste(format(Sys.time(), "%Y-%m-%d_%H-%M"),"_",as.character(year),
+  #                         ".png",sep=""))
   
   
 }
